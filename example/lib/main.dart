@@ -68,12 +68,16 @@ class RowData {
 }
 
 class ExampleSource extends AdvancedDataTableSource<RowData> {
+  //Generate some example data to use in the API
   final data = List<RowData>.generate(
-      13, (index) => RowData(index, 'Value for no. $index'));
+      330, (index) => RowData(index, 'Value for no. $index'));
 
   @override
   DataRow? getRow(int index) {
-    final currentRowData = lastDetails!.rows[index];
+    //Once this get called lastDetails will have a value
+    final currentRowData = lastDetails!
+        .rows[index]; //index will always be in the range of the current page
+    //Generate the row based on the requested index
     return DataRow(cells: [
       DataCell(
         Text(currentRowData.index.toString()),
@@ -90,10 +94,16 @@ class ExampleSource extends AdvancedDataTableSource<RowData> {
   @override
   Future<RemoteDataSourceDetails<RowData>> getNextPage(
       int pagesize, int offset) async {
-    await Future.delayed(Duration(seconds: 5));
+    //In a real use case you would request data from an external source here
+    await Future.delayed(
+        Duration(seconds: 5)); //simulate the request by waiting 5 seconds
+    //Return the new data packages for the page, always including the total amount of rows
     return RemoteDataSourceDetails(
       data.length,
-      data.skip(offset).take(pagesize).toList(),
+      data
+          .skip(offset)
+          .take(pagesize)
+          .toList(), //again in a real world example you would only get the right amount of rows
     );
   }
 }
