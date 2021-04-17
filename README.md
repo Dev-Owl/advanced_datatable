@@ -1,7 +1,7 @@
 # advanced_datatable
 Advanced Datatable uses the Fultter [PaginatedDataTable Widget](https://api.flutter.dev/flutter/material/PaginatedDataTable-class.html) and adds a few more functions to it.
 
-# New featuers
+# New features
 
 * Do not add empty/blank lines
 * Support for asny row loading, connect the table to a huge data source and only load the current page
@@ -11,17 +11,17 @@ Advanced Datatable uses the Fultter [PaginatedDataTable Widget](https://api.flut
 
 ## Hide blank rows
 
-Set the addEmptyRows property to false, by default it's true (to behave as the Flutter Original Widget). 
+Set the addEmptyRows property to false, by default its true (to behave as the Flutter Original Widget). 
 
-``` dart
+```dart
 addEmptyRows: false    
 ```
 
-## Support for asny row loading
+## Support for asnyc row loading
 
-The Orginal DataSource requies you to load all data in advance and just render it paged, in case your datasource is really huge and contains a lot of information this might not be the best options.
+The Original DataSource requires you to load all data in advance and just render it paged, in case your data source is huge and contains a lot of information this might not be the best options.
 AdvancedDataTableSource requires you to define a model that is used for the rows like shown below:
-``` dart
+```dart
 
 //Example model
 class RowData {
@@ -41,8 +41,8 @@ You will get the following details:
 * pageSize as int
 * offset as int
 
-You need to return a RemoteDataSourceDetails object that contains the current page rows and always the total rows avalible.
-``` dart
+You need to return a RemoteDataSourceDetails object that contains the current page rows and always the total rows available.
+```dart
 class ExampleSource extends AdvancedDataTableSource<RowData>{
   
   //Mockup for requesting data from some external source
@@ -65,7 +65,7 @@ You can set a custom loading and error widget by using the following props:
 * loadingWidget
 * errorWidget
 
-The above prop. are fuctions that will be run when the widget is needed and have to return a single widget.
+The above props. are functions that will be run when the widget is needed and have to return a single widget.
 
 
 # Example
