@@ -13,8 +13,10 @@ dependencies:
   flutter:
     sdk: flutter
   pedantic: ^1.11.0
+  
 
 dev_dependencies:
+  test: 
   flutter_test:
     sdk: flutter
 
