@@ -2,10 +2,6 @@ import 'package:advanced_datatable/advancedDataTableSource.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -94,9 +90,6 @@ class ExampleSource extends AdvancedDataTableSource<RowData> {
   @override
   Future<RemoteDataSourceDetails<RowData>> getNextPage(
       int pagesize, int offset) async {
-    //In a real use case you would request data from an external source here
-    //await Future.delayed(
-    // Duration(seconds: 5)); //simulate the request by waiting 5 seconds
     //Return the new data packages for the page, always including the total amount of rows
     return RemoteDataSourceDetails(
       data.length,

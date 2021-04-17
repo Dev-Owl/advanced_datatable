@@ -346,6 +346,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       cells: cells,
     );
   }
+  //TODO Somewhere below is a bug, switching rows per page somehow can generate a wrong index 1 off error
 
   /// Adjusted to work in the context of a datasource _not_ having all rows
   List<DataRow> _getRows(int firstRowIndex, int rowsPerPage) {
@@ -493,9 +494,17 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
             alignment: AlignmentDirectional.centerEnd,
             child: DropdownButtonHideUnderline(
               child: DropdownButton<int>(
+                key: Key('rowsPerPage'),
                 items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
                 value: widget.rowsPerPage,
-                onChanged: widget.onRowsPerPageChanged,
+                onChanged: (newRowsPerPage) {
+                  if (newRowsPerPage != null &&
+                      newRowsPerPage != widget.rowsPerPage) {
+                    loadNextPage =
+                        widget.source.loadNextPage(newRowsPerPage, 0);
+                    widget.onRowsPerPageChanged!(newRowsPerPage);
+                  }
+                },
                 style: footerTextStyle,
                 iconSize: 24.0,
               ),

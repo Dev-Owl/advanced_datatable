@@ -9,10 +9,11 @@ class TestData {
 
 class TestSource extends AdvancedDataTableSource<TestData> {
   static int totalRows = 100;
-
+  int lastOffset = 0;
   @override
   Future<RemoteDataSourceDetails<TestData>> getNextPage(
       int pagesize, int offset) async {
+    lastOffset = offset;
     return RemoteDataSourceDetails<TestData>(totalRows,
         List<TestData>.generate(pagesize, (index) => TestData(index)));
   }
@@ -22,7 +23,7 @@ class TestSource extends AdvancedDataTableSource<TestData> {
     return DataRow(cells: [
       DataCell(
         Text(
-          index.toString(),
+          (lastOffset + index).toString(),
         ),
       ),
     ]);
