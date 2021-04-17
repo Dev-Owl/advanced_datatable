@@ -12,6 +12,9 @@ import 'advancedDataTableSource.dart';
 
 typedef GetWidgetCallBack = Widget Function();
 
+/// Based on the "original" data table from the Flutter Dev Team
+/// Extended to support async data loading and other changes to be more
+/// flexible
 /// A material design data table that shows data using multiple pages.
 ///
 /// A paginated data table shows [rowsPerPage] rows of data per page and
@@ -101,12 +104,12 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
         assert(rowsPerPage != null),
         assert(rowsPerPage > 0),
         assert(() {
-          if (onRowsPerPageChanged != null)
+          if (onRowsPerPageChanged != null) {
             assert(availableRowsPerPage != null &&
                 availableRowsPerPage.contains(rowsPerPage));
+          }
           return true;
         }()),
-        assert(source != null),
         super(key: key);
 
   /// Add empty/blank lines to the table if not enough records are present
@@ -114,8 +117,12 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
   /// Default true
   final bool addEmptyRows;
 
+  /// Called while the page is loading
+  /// If not set a default loading will be shown
   final GetWidgetCallBack? loadingWidget;
 
+  /// Called once the page loading encountered an error in the future
+  /// If not provided a default message will be shown
   final GetWidgetCallBack? errorWidget;
 
   /// The table card's optional header.
@@ -257,6 +264,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
   late int _rowCount;
   late bool _rowCountApproximate;
   int _selectedRowCount = 0;
+  //Used to load the next page if needed
   late Future<int> loadNextPage;
   final Map<int, DataRow?> _rows = <int, DataRow?>{};
 
@@ -339,6 +347,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     );
   }
 
+  /// Adjusted to work in the context of a datasource _not_ having all rows
   List<DataRow> _getRows(int firstRowIndex, int rowsPerPage) {
     final result = <DataRow>[];
     final nextPageFirstRowIndex = firstRowIndex + rowsPerPage;
@@ -390,7 +399,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    // CARD
+    //Adjusted to first request the data followed by rendering the original table
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       return FutureBuilder<int>(
@@ -424,6 +433,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     });
   }
 
+  ///Original build method from the Flutter PageinatedDataTable
   Widget buildTableWhenReady(BoxConstraints constraints) {
     assert(debugCheckHasMaterialLocalizations(context));
     final themeData = Theme.of(context);
