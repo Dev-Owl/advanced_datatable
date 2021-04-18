@@ -301,6 +301,8 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       _rowCountApproximate = widget.source.isRowCountApproximate;
       _selectedRowCount = widget.source.selectedRowCount;
       _rows.clear();
+      loadNextPage =
+          widget.source.loadNextPage(widget.rowsPerPage, _firstRowIndex);
     });
   }
 
@@ -478,8 +480,8 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     final footerTextStyle = themeData.textTheme.caption;
     final footerWidgets = <Widget>[];
     if (widget.onRowsPerPageChanged != null) {
-      final List<Widget> availableRowsPerPage = widget.availableRowsPerPage
-          .map<DropdownMenuItem<int>>((int value) {
+      final List<Widget> availableRowsPerPage =
+          widget.availableRowsPerPage.map<DropdownMenuItem<int>>((int value) {
         return DropdownMenuItem<int>(
           value: value,
           child: Text(
