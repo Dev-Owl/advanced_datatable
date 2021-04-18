@@ -1,7 +1,7 @@
 name: advanced_datatable
 description: An addtion to the Flutter PaginatedDataTable allowing pagination
   also for the datasource
-version: 0.0.1
+version: 0.0.2
 author: Christian Muehle<info@devowl.de>
 homepage: devowl.de
 
