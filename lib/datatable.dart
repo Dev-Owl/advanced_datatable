@@ -276,7 +276,10 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
         0;
     widget.source.addListener(_handleDataSourceChanged);
     loadNextPage = widget.source.loadNextPage(widget.rowsPerPage, 0);
-    _handleDataSourceChanged();
+    _rowCount = widget.source.rowCount;
+    _rowCountApproximate = widget.source.isRowCountApproximate;
+    _selectedRowCount = widget.source.selectedRowCount;
+    _rows.clear();
   }
 
   @override
@@ -602,7 +605,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
             scrollDirection: Axis.horizontal,
             dragStartBehavior: widget.dragStartBehavior,
             child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: constraints.minWidth),
+              constraints: BoxConstraints(minWidth: constraints.maxWidth),
               child: DataTable(
                 key: _tableKey,
                 columns: widget.columns,
