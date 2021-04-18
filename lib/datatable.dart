@@ -12,7 +12,7 @@ import 'advancedDataTableSource.dart';
 
 typedef GetWidgetCallBack = Widget Function();
 
-/// Based on the "original" data table from the Flutter Dev Team
+/// Based on the 'original' data table from the Flutter Dev Team
 /// Extended to support async data loading and other changes to be more
 /// flexible
 /// A material design data table that shows data using multiple pages.
@@ -310,8 +310,8 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     setState(() {
       final rowsPerPage = widget.rowsPerPage;
       _firstRowIndex = (rowIndex ~/ rowsPerPage) * rowsPerPage;
-      loadNextPage = widget.source.loadNextPage(
-          widget.rowsPerPage, (rowIndex ~/ rowsPerPage) * rowsPerPage);
+      loadNextPage =
+          widget.source.loadNextPage(widget.rowsPerPage, _firstRowIndex);
     });
     if ((widget.onPageChanged != null) &&
         (oldFirstRowIndex != _firstRowIndex)) {
@@ -346,20 +346,25 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       cells: cells,
     );
   }
-  //TODO Somewhere below is a bug, switching rows per page somehow can generate a wrong index 1 off error
 
   /// Adjusted to work in the context of a datasource _not_ having all rows
   List<DataRow> _getRows(int firstRowIndex, int rowsPerPage) {
     final result = <DataRow>[];
     final nextPageFirstRowIndex = firstRowIndex + rowsPerPage;
     var haveProgressIndicator = false;
+    print('firstRow: $firstRowIndex');
+    print('nextPageFirstRowIndex: $nextPageFirstRowIndex');
     for (var index = firstRowIndex; index < nextPageFirstRowIndex; index += 1) {
       DataRow? row;
       if (index < _rowCount || _rowCountApproximate) {
+        print(
+            'index - x: $index - ${(firstRowIndex ~/ rowsPerPage) * rowsPerPage}');
+        print(
+            'index - start: $index - $firstRowIndex = ${index - firstRowIndex}');
         row = _rows.putIfAbsent(
             index,
-            () => widget.source
-                .getRow(index - (firstRowIndex ~/ rowsPerPage) * rowsPerPage));
+            () => widget.source.getRow(index -
+                firstRowIndex)); //index - (firstRowIndex ~/ rowsPerPage) * rowsPerPage)
 
         if (row == null && !haveProgressIndicator) {
           row ??= _getProgressIndicatorRowFor(index);
@@ -500,8 +505,9 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                 onChanged: (newRowsPerPage) {
                   if (newRowsPerPage != null &&
                       newRowsPerPage != widget.rowsPerPage) {
-                    loadNextPage =
-                        widget.source.loadNextPage(newRowsPerPage, 0);
+                    print('change rows per page to $newRowsPerPage');
+                    loadNextPage = widget.source
+                        .loadNextPage(newRowsPerPage, _firstRowIndex);
                     widget.onRowsPerPageChanged!(newRowsPerPage);
                   }
                 },

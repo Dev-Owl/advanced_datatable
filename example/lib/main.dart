@@ -80,7 +80,7 @@ class ExampleSource extends AdvancedDataTableSource<RowData> {
     //Generate the row based on the requested index
     return DataRow(cells: [
       DataCell(
-        Text(currentRowData.index.toString()),
+        Text((currentRowData.index + 1).toString()),
       ),
       DataCell(
         Text(currentRowData.value),
