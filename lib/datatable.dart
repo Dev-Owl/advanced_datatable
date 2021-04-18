@@ -484,7 +484,10 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
           .map<DropdownMenuItem<int>>((int value) {
         return DropdownMenuItem<int>(
           value: value,
-          child: Text('$value'),
+          child: Text(
+            '$value',
+            key: Key('opt_$value'),
+          ),
         );
       }).toList();
       footerWidgets.addAll(<Widget>[

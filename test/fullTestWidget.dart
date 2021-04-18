@@ -3,6 +3,12 @@ import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
+  final Function(int rowsPergPage) rowsChange;
+
+  const MyApp(
+    this.rowsChange, {
+    Key? key,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -10,13 +16,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(rowsChange, title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, this.title}) : super(key: key);
+  final Function(int rowsPergPage) rowsChange;
+  MyHomePage(this.rowsChange, {Key? key, this.title}) : super(key: key);
   final String? title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -38,9 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
           source: source,
           showFirstLastButtons: true,
           rowsPerPage: rowsPerPage,
-          availableRowsPerPage: [1, 5, 10, 50],
+          availableRowsPerPage: [1, 5, 10, 45],
           onRowsPerPageChanged: (newRowsPerPage) {
             if (newRowsPerPage != null) {
+              widget.rowsChange(newRowsPerPage);
               setState(() {
                 rowsPerPage = newRowsPerPage;
               });

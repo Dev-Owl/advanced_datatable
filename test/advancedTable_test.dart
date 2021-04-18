@@ -48,29 +48,33 @@ void main() {
     expect(find.textContaining('15'), findsOneWidget);
   });
 
-  //TODO Test below seems to not find the element for the dropdown
+  //TODO Test below seems to not actually tap/change the dropdown...
   testWidgets('Ensure rows per page works', (WidgetTester tester) async {
-    await tester.pumpWidget(MyApp());
+    var rowsPerPage = 0;
+
+    await tester.pumpWidget(MyApp((r) => rowsPerPage = r));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    await tester.pump();
     await tester.pumpAndSettle();
     expect(find.byType(CircularProgressIndicator), findsNothing);
     //Find the row
-    expect(find.textContaining('5'), findsOneWidget);
+    expect(find.text('8'), findsOneWidget);
     //Find the totoal rows avalible
     expect(find.textContaining('330'), findsOneWidget);
-    await tester.pumpAndSettle();
     //Find the rows per page dialog
-    await tester.tap(find.byKey(Key('rowsPerPage')));
-    await tester.pump();
-    await tester.pumpAndSettle();
-    //50 rows per page
-    expect(find.textContaining('50'), findsOneWidget);
+    expect(find.byKey(Key('rowsPerPage')), findsOneWidget);
 
-    await tester.tap(find.textContaining('50'));
-    await tester.pump();
-    await tester.pumpAndSettle();
+    expect(
+        (tester.widget(find.byKey(Key('rowsPerPage'))) as DropdownButton).value,
+        10);
+    await tester.tap(find.byKey(Key('opt_10')));
+    await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
-    expect(find.textContaining('45'), findsOneWidget);
+    await tester.tap(find.byKey(Key('opt_45')));
+    await tester.pumpAndSettle(const Duration(milliseconds: 200));
+
+    expect(rowsPerPage, 45);
+
+    //45 rows per page
+    expect(find.text('30'), findsOneWidget);
   });
 }
