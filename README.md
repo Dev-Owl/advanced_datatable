@@ -46,11 +46,11 @@ You need to return a RemoteDataSourceDetails object that contains the current pa
 class ExampleSource extends AdvancedDataTableSource<RowData>{
   
   //Mockup for requesting data from some external source
-  Future<RemoteDataSourceDetails<RowData>> getNextPage(int pagesize, int offset) async {
+  Future<RemoteDataSourceDetails<RowData>> getNextPage(NextPageRequest pageRequest) async {
     await Future.delayed(Duration(seconds: 5));
     return RemoteDataSourceDetails(
       data.length,
-      data.skip(offset).take(pagesize).toList(),
+      data.skip(pageRequest.offset).take(pageRequest.pageSize).toList(),
     );
   }
   
@@ -164,11 +164,13 @@ class ExampleSource extends AdvancedDataTableSource<RowData> {
 
   @override
   Future<RemoteDataSourceDetails<RowData>> getNextPage(
-      int pagesize, int offset) async {
-    await Future.delayed(Duration(seconds: 5));
+      NextPageRequest pageRequest) async {
     return RemoteDataSourceDetails(
       data.length,
-      data.skip(offset).take(pagesize).toList(),
+      data
+          .skip(pageRequest.offset)
+          .take(pageRequest.pageSize)
+          .toList(), //again in a real world example you would only get the right amount of rows
     );
   }
 }

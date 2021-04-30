@@ -275,7 +275,8 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
         widget.initialFirstRowIndex ??
         0;
     widget.source.addListener(_handleDataSourceChanged);
-    loadNextPage = widget.source.loadNextPage(widget.rowsPerPage, 0);
+    setLoadNextPage(firstRowIndex: 0);
+
     _rowCount = widget.source.rowCount;
     _rowCountApproximate = widget.source.isRowCountApproximate;
     _selectedRowCount = widget.source.selectedRowCount;
@@ -304,9 +305,20 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       _rowCountApproximate = widget.source.isRowCountApproximate;
       _selectedRowCount = widget.source.selectedRowCount;
       _rows.clear();
-      loadNextPage =
-          widget.source.loadNextPage(widget.rowsPerPage, _firstRowIndex);
+      setLoadNextPage();
     });
+  }
+
+  void setLoadNextPage({int? rowsPerPage, int? firstRowIndex}) {
+    rowsPerPage ??= widget.rowsPerPage;
+    firstRowIndex ??= _firstRowIndex;
+
+    loadNextPage = widget.source.loadNextPage(
+      rowsPerPage,
+      firstRowIndex,
+      widget.sortColumnIndex,
+      widget.sortAscending,
+    );
   }
 
   /// Ensures that the given row is visible.
@@ -315,8 +327,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     setState(() {
       final rowsPerPage = widget.rowsPerPage;
       _firstRowIndex = (rowIndex ~/ rowsPerPage) * rowsPerPage;
-      loadNextPage =
-          widget.source.loadNextPage(widget.rowsPerPage, _firstRowIndex);
+      setLoadNextPage();
     });
     if ((widget.onPageChanged != null) &&
         (oldFirstRowIndex != _firstRowIndex)) {
@@ -516,8 +527,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                   if (newRowsPerPage != null &&
                       newRowsPerPage != widget.rowsPerPage) {
                     print('change rows per page to $newRowsPerPage');
-                    loadNextPage = widget.source
-                        .loadNextPage(newRowsPerPage, _firstRowIndex);
+                    setLoadNextPage(rowsPerPage: newRowsPerPage);
                     widget.onRowsPerPageChanged!(newRowsPerPage);
                   }
                 },

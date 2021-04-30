@@ -12,7 +12,7 @@ void main() {
     expect(source.lastDetails, null);
 
     //Load the first 10 rows
-    await source.loadNextPage(10, 0);
+    await source.loadNextPage(10, 0, null, null);
 
     //Always report back the total rows
     expect(source.rowCount, TestSource.totalRows);

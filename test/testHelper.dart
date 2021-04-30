@@ -10,13 +10,6 @@ class TestData {
 class TestSource extends AdvancedDataTableSource<TestData> {
   static int totalRows = 100;
   int lastOffset = 0;
-  @override
-  Future<RemoteDataSourceDetails<TestData>> getNextPage(
-      int pagesize, int offset) async {
-    lastOffset = offset;
-    return RemoteDataSourceDetails<TestData>(totalRows,
-        List<TestData>.generate(pagesize, (index) => TestData(index)));
-  }
 
   @override
   DataRow? getRow(int index) {
@@ -31,4 +24,14 @@ class TestSource extends AdvancedDataTableSource<TestData> {
 
   @override
   int get selectedRowCount => 0;
+
+  @override
+  Future<RemoteDataSourceDetails<TestData>> getNextPage(
+      NextPageRequest pageRequest) async {
+    lastOffset = pageRequest.offset;
+    return RemoteDataSourceDetails<TestData>(
+        totalRows,
+        List<TestData>.generate(
+            pageRequest.pageSize, (index) => TestData(index)));
+  }
 }

@@ -1,3 +1,4 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - 04/30/2021
 
-* TODO: Describe initial release.
+* Server side data table with paging support
+* Allowing the same changes as the build in PaginatedDataTable

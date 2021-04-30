@@ -93,16 +93,12 @@ class ExampleSource extends AdvancedDataTableSource<RowData> {
 
   @override
   Future<RemoteDataSourceDetails<RowData>> getNextPage(
-      int pagesize, int offset) async {
-    //In a real use case you would request data from an external source here
-    //await Future.delayed(
-    // Duration(seconds: 5)); //simulate the request by waiting 5 seconds
-    //Return the new data packages for the page, always including the total amount of rows
+      NextPageRequest pageRequest) async {
     return RemoteDataSourceDetails(
       data.length,
       data
-          .skip(offset)
-          .take(pagesize)
+          .skip(pageRequest.offset)
+          .take(pageRequest.pageSize)
           .toList(), //again in a real world example you would only get the right amount of rows
     );
   }
