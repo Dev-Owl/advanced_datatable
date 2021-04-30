@@ -487,9 +487,9 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
           widget.availableRowsPerPage.map<DropdownMenuItem<int>>((int value) {
         return DropdownMenuItem<int>(
           value: value,
+          key: ValueKey('opt_$value'),
           child: Text(
             '$value',
-            key: Key('opt_$value'),
           ),
         );
       }).toList();
@@ -504,10 +504,14 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
           child: Align(
             alignment: AlignmentDirectional.centerEnd,
             child: DropdownButtonHideUnderline(
+              key: Key('rowsPerPageParent'),
               child: DropdownButton<int>(
                 key: Key('rowsPerPage'),
                 items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
                 value: widget.rowsPerPage,
+                onTap: () {
+                  print('tapped the rows per page');
+                },
                 onChanged: (newRowsPerPage) {
                   if (newRowsPerPage != null &&
                       newRowsPerPage != widget.rowsPerPage) {

@@ -1,8 +1,6 @@
 import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'fullTestWidget.dart';
 import 'testHelper.dart';
 
 void main() {
@@ -48,33 +46,62 @@ void main() {
     expect(find.textContaining('15'), findsOneWidget);
   });
 
-  //TODO Test below seems to not actually tap/change the dropdown...
   testWidgets('Ensure rows per page works', (WidgetTester tester) async {
-    var rowsPerPage = 0;
+    int? rowsPerPage;
 
-    await tester.pumpWidget(MyApp((r) => rowsPerPage = r));
+    await tester.pumpWidget(
+      StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) => MaterialApp(
+          home: MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: AdvancedPaginatedDataTable(
+                    rowsPerPage: rowsPerPage ?? 10,
+                    availableRowsPerPage: [
+                      10,
+                      20,
+                      30,
+                      45,
+                    ],
+                    columns: [
+                      DataColumn(
+                        label: Text('Id'),
+                      ),
+                    ],
+                    source: TestSource(),
+                    onRowsPerPageChanged: (r) {
+                      setState(() {
+                        rowsPerPage = r;
+                      });
+                    }),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     await tester.pumpAndSettle();
     expect(find.byType(CircularProgressIndicator), findsNothing);
     //Find the row
     expect(find.text('8'), findsOneWidget);
     //Find the totoal rows avalible
-    expect(find.textContaining('330'), findsOneWidget);
+    expect(find.textContaining('100'), findsOneWidget);
     //Find the rows per page dialog
     expect(find.byKey(Key('rowsPerPage')), findsOneWidget);
 
     expect(
         (tester.widget(find.byKey(Key('rowsPerPage'))) as DropdownButton).value,
         10);
-    await tester.tap(find.byKey(Key('opt_10')));
-    await tester.pumpAndSettle(const Duration(milliseconds: 200));
+    await tester.tap(find.byKey(Key('rowsPerPage')));
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(Key('opt_45')));
-    await tester.pumpAndSettle(const Duration(milliseconds: 200));
+    await tester.tap(find.text('45').last);
+    await tester.pumpAndSettle();
 
     expect(rowsPerPage, 45);
 
     //45 rows per page
-    expect(find.text('30'), findsOneWidget);
+    expect(find.text('44'), findsOneWidget);
   });
 }
