@@ -291,6 +291,10 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       widget.source.addListener(_handleDataSourceChanged);
       _handleDataSourceChanged();
     }
+    if (oldWidget.sortColumnIndex != widget.sortColumnIndex ||
+        oldWidget.sortAscending != widget.sortAscending) {
+      _handleDataSourceChanged();
+    }
   }
 
   @override

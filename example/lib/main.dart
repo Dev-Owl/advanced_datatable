@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:advanced_datatable/advancedDataTableSource.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'company_contact.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Advanced DataTable Demo'),
     );
   }
 }
@@ -29,6 +33,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var rowsPerPage = AdvancedPaginatedDataTable.defaultRowsPerPage;
   final source = ExampleSource();
+  var sortIndex = 0;
+  var sortAsc = true;
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: AdvancedPaginatedDataTable(
           addEmptyRows: false,
           source: source,
+          sortAscending: sortAsc,
+          sortColumnIndex: sortIndex,
           showFirstLastButtons: true,
           rowsPerPage: rowsPerPage,
-          availableRowsPerPage: [1, 5, 10, 50],
+          availableRowsPerPage: [10, 20, 30, 50],
           onRowsPerPageChanged: (newRowsPerPage) {
             if (newRowsPerPage != null) {
               setState(() {
@@ -51,55 +59,58 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           },
           columns: [
-            DataColumn(label: Text('Row no')),
-            DataColumn(label: Text('Value'))
+            DataColumn(label: Text('ID'), numeric: true, onSort: setSort),
+            DataColumn(label: Text('Company'), onSort: setSort),
+            DataColumn(label: Text('First name'), onSort: setSort),
+            DataColumn(label: Text('Last name'), onSort: setSort),
+            DataColumn(label: Text('Phone'), onSort: setSort),
           ],
         ),
       ),
     );
   }
+
+  void setSort(int i, bool asc) => setState(() {
+        sortIndex = i;
+        sortAsc = asc;
+      });
 }
 
-class RowData {
-  final int index;
-  final String value;
-
-  RowData(this.index, this.value);
-}
-
-class ExampleSource extends AdvancedDataTableSource<RowData> {
-  //Generate some example data to use in the API
-  final data = List<RowData>.generate(
-      330, (index) => RowData(index, 'Value for no. $index'));
-
+class ExampleSource extends AdvancedDataTableSource<CompanyContact> {
   @override
-  DataRow? getRow(int index) {
-    //Once this get called lastDetails will have a value
-    final currentRowData = lastDetails!
-        .rows[index]; //index will always be in the range of the current page
-    //Generate the row based on the requested index
-    return DataRow(cells: [
-      DataCell(
-        Text((currentRowData.index + 1).toString()),
-      ),
-      DataCell(
-        Text(currentRowData.value),
-      )
-    ]);
-  }
+  DataRow? getRow(int index) => lastDetails!.rows[index].getRow();
 
   @override
   int get selectedRowCount => 0;
 
   @override
-  Future<RemoteDataSourceDetails<RowData>> getNextPage(
+  Future<RemoteDataSourceDetails<CompanyContact>> getNextPage(
       NextPageRequest pageRequest) async {
-    return RemoteDataSourceDetails(
-      data.length,
-      data
-          .skip(pageRequest.offset)
-          .take(pageRequest.pageSize)
-          .toList(), //again in a real world example you would only get the right amount of rows
+    //the remote data source has to support the pagaing and sorting
+    final queryParameter = <String, dynamic>{
+      'offset': pageRequest.offset.toString(),
+      'pageSize': pageRequest.pageSize.toString(),
+      'sortIndex': ((pageRequest.columnSortIndex ?? 0) + 1).toString(),
+      'sortAsc': ((pageRequest.sortAscending ?? true) ? 1 : 0).toString(),
+    };
+
+    final requestUri = Uri.https(
+      'example.devowl.de',
+      '',
+      queryParameter,
     );
+
+    final response = await http.get(requestUri);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return RemoteDataSourceDetails(
+        data['totalRows'],
+        (data['rows'] as List<dynamic>)
+            .map((json) => CompanyContact.fromJson(json))
+            .toList(),
+      );
+    } else {
+      throw Exception('Unable to query remote server');
+    }
   }
 }

@@ -1,0 +1,14 @@
+name: httpserver
+description: Sample HTTP clients and servers
+homepage: https://dart.dev/tutorials/server/httpserver
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  http_server: ^0.9.8+1
+  path: ^1.6.2
+
+dev_dependencies:
+  pedantic: ^1.7.0
+
