@@ -104,4 +104,69 @@ void main() {
     //45 rows per page
     expect(find.text('44'), findsOneWidget);
   });
+
+  testWidgets('Ensure column sort triggers', (WidgetTester tester) async {
+    int? rowsPerPage;
+    var sortIndex = 0;
+    var sortAsc = true;
+
+    await tester.pumpWidget(
+      StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) => MaterialApp(
+          home: MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: AdvancedPaginatedDataTable(
+                    sortColumnIndex: sortIndex,
+                    sortAscending: sortAsc,
+                    rowsPerPage: rowsPerPage ?? 10,
+                    availableRowsPerPage: [
+                      10,
+                      20,
+                      30,
+                      45,
+                    ],
+                    columns: [
+                      DataColumn(
+                          label: Text('Id'),
+                          onSort: (i, asc) {
+                            setState(() {
+                              sortIndex = i;
+                              sortAsc = asc;
+                            });
+                          }),
+                      DataColumn(
+                          label: Text('Value'),
+                          onSort: (i, asc) {
+                            setState(() {
+                              sortIndex = i;
+                              sortAsc = asc;
+                            });
+                          }),
+                    ],
+                    source: TestSource(twoColumn: true),
+                    onRowsPerPageChanged: (r) {
+                      setState(() {
+                        rowsPerPage = r;
+                      });
+                    }),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byIcon(Icons.arrow_upward), findsNWidgets(2));
+    await tester.tap(find.text('Id'));
+    await tester.pumpAndSettle();
+    expect(sortAsc, false);
+    expect(sortIndex, 0);
+    await tester.tap(find.text('Value'));
+    await tester.pumpAndSettle();
+    expect(sortAsc, true);
+    expect(sortIndex, 1);
+  });
 }

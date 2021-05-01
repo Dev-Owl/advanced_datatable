@@ -10,16 +10,30 @@ class TestData {
 class TestSource extends AdvancedDataTableSource<TestData> {
   static int totalRows = 100;
   int lastOffset = 0;
+  final bool twoColumn;
+
+  TestSource({this.twoColumn = false});
 
   @override
   DataRow? getRow(int index) {
-    return DataRow(cells: [
+    final cells = [
       DataCell(
         Text(
           (lastOffset + index).toString(),
         ),
       ),
-    ]);
+    ];
+    if (twoColumn) {
+      cells.add(
+        DataCell(
+          Text(
+            'Column two',
+          ),
+        ),
+      );
+    }
+
+    return DataRow(cells: cells);
   }
 
   @override
