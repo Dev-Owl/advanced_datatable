@@ -531,8 +531,12 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                   if (newRowsPerPage != null &&
                       newRowsPerPage != widget.rowsPerPage) {
                     print('change rows per page to $newRowsPerPage');
+                    _firstRowIndex =
+                        _firstRowIndex + widget.rowsPerPage - newRowsPerPage;
                     setLoadNextPage(rowsPerPage: newRowsPerPage);
-                    widget.onRowsPerPageChanged!(newRowsPerPage);
+                    if (widget.onRowsPerPageChanged != null) {
+                      widget.onRowsPerPageChanged!(newRowsPerPage);
+                    }
                   }
                 },
                 style: footerTextStyle,
