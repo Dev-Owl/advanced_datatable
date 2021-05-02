@@ -6,3 +6,7 @@
 ## [0.0.3] - 04/31/2021
 
 * Auto reload page in case column sorting is changed
+
+## [0.0.3+1] - 05/02/2021
+
+* Updated readme to include the live example
