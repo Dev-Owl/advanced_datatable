@@ -1,3 +1,7 @@
+[![pub points](https://badges.bar/advanced_datatable/pub%20points)](https://pub.dev/packages/advanced_datatable/score)
+[![likes](https://badges.bar/advanced_datatable/likes)](https://pub.dev/packages/advanced_datatable/score)
+[![popularity](https://badges.bar/advanced_datatable/popularity)](https://pub.dev/packages/advanced_datatable/score)
+
 # advanced_datatable
 Advanced Datatable uses the Fultter [PaginatedDataTable Widget](https://api.flutter.dev/flutter/material/PaginatedDataTable-class.html) and adds a few more functions to it.
 
