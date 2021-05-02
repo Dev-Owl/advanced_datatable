@@ -8,6 +8,11 @@ Advanced Datatable uses the Fultter [PaginatedDataTable Widget](https://api.flut
 * Custom loading and error widgets
 * Correct display of data size and position (1 of 10 from 100) in the footer
 
+## Web demo
+
+You can find a demo using a remote server following the link below, while using the page check your Network Monitor F12 to see what data is actually loaded when you switch pages or change the amount of rows. The remote server has 1000 rows, your client will only get a subset of it at any time. The remote server will also take care of the selected order (otherwise it would not be able to page the data correctly).
+
+[Online Demo](https://dev-owl.github.io/advanced_datatable/)
 
 ## Hide blank rows
 
