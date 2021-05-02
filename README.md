@@ -3,18 +3,18 @@
 [![popularity](https://badges.bar/advanced_datatable/popularity)](https://pub.dev/packages/advanced_datatable/score)
 
 # advanced_datatable
-Advanced Datatable uses the Fultter [PaginatedDataTable Widget](https://api.flutter.dev/flutter/material/PaginatedDataTable-class.html) and adds a few more functions to it.
+Advanced Datatable uses the Flutter [PaginatedDataTable Widget](https://api.flutter.dev/flutter/material/PaginatedDataTable-class.html) and adds a few more functions to it.
 
 # New features
 
 * Do not add empty/blank lines
-* Support for asny row loading, connect the table to a huge data source and only load the current page
+* Support for async row loading, connect the table to a huge data source and only load the current page
 * Custom loading and error widgets
 * Correct display of data size and position (1 of 10 from 100) in the footer
 
 ## Web demo
 
-You can find a demo using a remote server following the link below, while using the page check your Network Monitor F12 to see what data is actually loaded when you switch pages or change the amount of rows. The remote server has 1000 rows, your client will only get a subset of it at any time. The remote server will also take care of the selected order (otherwise it would not be able to page the data correctly).
+You can find a demo using a remote server following the link below, while using the page check your Network Monitor F12 to see what data is actually loaded when you switch pages or change the number of rows. The remote server has 1000 rows, your client will only get a subset of it at any time. The remote server will also take care of the selected order (otherwise it would not be able to page the data correctly).
 
 [Online Demo](https://dev-owl.github.io/advanced_datatable/)
 
@@ -26,10 +26,10 @@ Set the addEmptyRows property to false, by default its true (to behave as the Fl
 addEmptyRows: false    
 ```
 
-## Support for asnyc row loading
+## Support for async row loading
 
 The Original DataSource requires you to load all data in advance and just render it paged, in case your data source is huge and contains a lot of information this might not be the best options.
-AdvancedDataTableSource requires you to define a model that is used for the rows like shown below:
+AdvancedDataTableSource requires you to define a model that is used for the rows as shown below:
 ```dart
 
 //Example model
@@ -74,7 +74,7 @@ You can set a custom loading and error widget by using the following props:
 * loadingWidget
 * errorWidget
 
-The above props. are functions that will be run when the widget is needed and have to return a single widget.
+The above props are functions that will be run when the widget is needed and have to return a single widget.
 
 
 # Example
