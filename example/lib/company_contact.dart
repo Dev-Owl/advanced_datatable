@@ -1,3 +1,4 @@
+import 'package:example_adv_datatable/main.dart';
 import 'package:flutter/material.dart';
 
 class CompanyContact {
@@ -15,14 +16,23 @@ class CompanyContact {
     this.phone,
   );
 
-  DataRow getRow() {
-    return DataRow(cells: [
-      DataCell(Text(id.toString())),
-      DataCell(Text(companyName)),
-      DataCell(Text(firstName)),
-      DataCell(Text(lastName)),
-      DataCell(Text(phone)),
-    ]);
+  DataRow getRow(
+    SelectedCallBack callback,
+    List<String> selectedIds,
+  ) {
+    return DataRow(
+      cells: [
+        DataCell(Text(id.toString())),
+        DataCell(Text(companyName)),
+        DataCell(Text(firstName)),
+        DataCell(Text(lastName)),
+        DataCell(Text(phone)),
+      ],
+      onSelectChanged: (newState) {
+        callback(id.toString(), newState ?? false);
+      },
+      selected: selectedIds.contains(id.toString()),
+    );
   }
 
   factory CompanyContact.fromJson(Map<String, dynamic> json) {

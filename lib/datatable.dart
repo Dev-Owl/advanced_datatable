@@ -256,6 +256,10 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
   //Used to load the next page if needed
   late Future<int> loadNextPage;
   final Map<int, DataRow?> _rows = <int, DataRow?>{};
+  int? lastOffset;
+  int? lastRecordsByPage;
+  int? lastOrderColumn;
+  bool? lastOrderDirection;
 
   @override
   void initState() {
@@ -297,21 +301,41 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       _rowCount = widget.source.rowCount;
       _rowCountApproximate = widget.source.isRowCountApproximate;
       _selectedRowCount = widget.source.selectedRowCount;
-      _rows.clear();
       setLoadNextPage();
     });
   }
 
-  void setLoadNextPage({int? rowsPerPage, int? firstRowIndex}) {
+  bool remoteReloadRequired(int? rowsPerPage, int? firstRowIndex) {
     rowsPerPage ??= widget.rowsPerPage;
     firstRowIndex ??= _firstRowIndex;
 
-    loadNextPage = widget.source.loadNextPage(
-      rowsPerPage,
-      firstRowIndex,
-      widget.sortColumnIndex,
-      widget.sortAscending,
-    );
+    if (lastOrderColumn != widget.sortColumnIndex ||
+        lastOrderDirection != widget.sortAscending ||
+        lastRecordsByPage != rowsPerPage ||
+        lastOffset != firstRowIndex) {
+      lastOrderColumn = widget.sortColumnIndex;
+      lastOrderDirection = widget.sortAscending;
+      lastRecordsByPage = rowsPerPage;
+      lastOffset = firstRowIndex;
+
+      return true;
+    }
+    return false;
+  }
+
+  void setLoadNextPage({int? rowsPerPage, int? firstRowIndex}) {
+    _rows.clear();
+
+    rowsPerPage ??= widget.rowsPerPage;
+    firstRowIndex ??= _firstRowIndex;
+    if (remoteReloadRequired(rowsPerPage, firstRowIndex)) {
+      loadNextPage = widget.source.loadNextPage(
+        rowsPerPage,
+        firstRowIndex,
+        widget.sortColumnIndex,
+        widget.sortAscending,
+      );
+    }
   }
 
   /// Ensures that the given row is visible.

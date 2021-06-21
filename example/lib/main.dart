@@ -76,12 +76,26 @@ class _MyHomePageState extends State<MyHomePage> {
       });
 }
 
+typedef SelectedCallBack = Function(String id, bool newSelectState);
+
 class ExampleSource extends AdvancedDataTableSource<CompanyContact> {
-  @override
-  DataRow? getRow(int index) => lastDetails!.rows[index].getRow();
+  List<String> selectedIds = [];
 
   @override
-  int get selectedRowCount => 0;
+  DataRow? getRow(int index) =>
+      lastDetails!.rows[index].getRow(selectedRow, selectedIds);
+
+  @override
+  int get selectedRowCount => selectedIds.length;
+
+  void selectedRow(String id, bool newSelectState) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+    } else {
+      selectedIds.add(id);
+    }
+    notifyListeners();
+  }
 
   @override
   Future<RemoteDataSourceDetails<CompanyContact>> getNextPage(
