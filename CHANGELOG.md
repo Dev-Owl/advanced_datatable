@@ -10,3 +10,9 @@
 ## [0.0.3+1] - 05/02/2021
 
 * Updated readme to include the live example
+
+## [0.0.3+2] - 06/21/2021
+
+* Allow local reload if possible
+* Updated example to contain selection of rows
+* Selection of rows no longer trigger a call to the remote data source
