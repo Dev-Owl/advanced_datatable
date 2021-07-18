@@ -14,6 +14,14 @@ class TestSource extends AdvancedDataTableSource<TestData> {
 
   TestSource({this.twoColumn = false});
 
+  void forceReload() {
+    forceRemoteReload = true;
+  }
+
+  void triggerListeners() {
+    notifyListeners();
+  }
+
   @override
   DataRow? getRow(int index) {
     final cells = [
@@ -36,6 +44,8 @@ class TestSource extends AdvancedDataTableSource<TestData> {
     return DataRow(cells: cells);
   }
 
+  DateTime? lastLoad;
+
   @override
   int get selectedRowCount => 0;
 
@@ -43,6 +53,7 @@ class TestSource extends AdvancedDataTableSource<TestData> {
   Future<RemoteDataSourceDetails<TestData>> getNextPage(
       NextPageRequest pageRequest) async {
     lastOffset = pageRequest.offset;
+    lastLoad = DateTime.now();
     return RemoteDataSourceDetails<TestData>(
         totalRows,
         List<TestData>.generate(

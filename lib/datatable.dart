@@ -306,6 +306,11 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
   }
 
   bool remoteReloadRequired(int? rowsPerPage, int? firstRowIndex) {
+    if (widget.source.requireRemoteReload()) {
+      //We only want to force the reload once
+      widget.source.forceRemoteReload = false;
+      return true;
+    }
     rowsPerPage ??= widget.rowsPerPage;
     firstRowIndex ??= _firstRowIndex;
 

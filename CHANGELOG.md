@@ -16,3 +16,9 @@
 * Allow local reload if possible
 * Updated example to contain selection of rows
 * Selection of rows no longer trigger a call to the remote data source
+
+## [0.0.4] - 07/18/2021
+
+* Trigger a remote reload if you want it
+* Updated related packages 
+* New example with filter

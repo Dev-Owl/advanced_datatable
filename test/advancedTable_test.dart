@@ -1,9 +1,12 @@
 import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'testHelper.dart';
 
 void main() {
+  final source = TestSource();
+
   Widget testWidget() => MaterialApp(
         home: Scaffold(
           body: AdvancedPaginatedDataTable(
@@ -12,7 +15,7 @@ void main() {
                 label: Text('Id'),
               ),
             ],
-            source: TestSource(),
+            source: source,
           ),
         ),
       );
@@ -168,5 +171,31 @@ void main() {
     await tester.pumpAndSettle();
     expect(sortAsc, true);
     expect(sortIndex, 1);
+  });
+
+  testWidgets('Force remote reload', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget());
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    var lastLoad = source.lastLoad;
+    //This should not change the last load time
+    source.triggerListeners();
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(lastLoad, equals(source.lastLoad));
+    //Now remote load should work
+    source.forceReload();
+    source.triggerListeners();
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(lastLoad, isNot(equals(source.lastLoad)));
+    //Now it should be reseted and not change
+    lastLoad = source.lastLoad;
+    source.triggerListeners();
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(lastLoad, equals(source.lastLoad));
   });
 }

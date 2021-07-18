@@ -25,4 +25,10 @@ void main() {
     //request rows
     expect(source.getRow(0), isNotNull);
   });
+
+  test('Force reload off', () async {
+    final source = TestSource();
+    //By default off
+    expect(source.requireRemoteReload(), equals(false));
+  });
 }

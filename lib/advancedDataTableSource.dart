@@ -15,6 +15,8 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
   @override
   bool get isRowCountApproximate => false;
 
+  bool forceRemoteReload = false;
+
   Future<int> loadNextPage(int pageSize, int offset, int? columnSortIndex,
       bool? sortAsceding) async {
     try {
@@ -31,6 +33,11 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
       return Future.error(error);
     }
   }
+
+  ///Override this function to ensure  a remote reload is done
+  ///If you override this function ensure to reset the state once a reload has happend
+  ///Consider the reload as done once this funciton is called
+  bool requireRemoteReload() => forceRemoteReload;
 }
 
 class NextPageRequest {
