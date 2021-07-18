@@ -11,6 +11,12 @@ import 'package:flutter/widgets.dart';
 import 'advancedDataTableSource.dart';
 
 typedef GetWidgetCallBack = Widget Function();
+typedef GetFooterRowText = String Function(
+  int startRow,
+  int pageSize,
+  int? totalFilter,
+  int totalRowsWithoutFilter,
+);
 
 /// Based on the 'original' data table from the Flutter Dev Team
 /// Extended to support async data loading and other changes to be more
@@ -88,6 +94,7 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
     this.addEmptyRows = true,
     this.loadingWidget,
     this.errorWidget,
+    this.getFooterRowText,
   })  : assert(actions == null || header != null),
         assert(columns.isNotEmpty),
         assert(sortColumnIndex == null ||
@@ -105,6 +112,8 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
   /// If the source doesnt have enough data add empty/blank lines to fill a page
   /// Default true
   final bool addEmptyRows;
+
+  final GetFooterRowText? getFooterRowText;
 
   /// Called while the page is loading
   /// If not set a default loading will be shown
@@ -566,12 +575,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     footerWidgets.addAll(<Widget>[
       Container(width: 32.0),
       Text(
-        localizations.pageRowsInfoTitle(
-          _firstRowIndex + 1,
-          math.min(_firstRowIndex + widget.rowsPerPage, _rowCount),
-          _rowCount,
-          _rowCountApproximate,
-        ),
+        buildDataAmountText(),
       ),
       Container(width: 32.0),
       if (widget.showFirstLastButtons)
@@ -685,5 +689,32 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
         ],
       ),
     );
+  }
+
+  String buildDataAmountText() {
+    if (widget.getFooterRowText != null) {
+      return widget.getFooterRowText!(
+        _firstRowIndex + 1,
+        math.min(_firstRowIndex + widget.rowsPerPage, _rowCount),
+        widget.source.lastDetails?.totalRows,
+        _rowCount,
+      );
+    }
+
+    final localizations = MaterialLocalizations.of(context);
+    var amountText = localizations.pageRowsInfoTitle(
+      _firstRowIndex + 1,
+      math.min(_firstRowIndex + widget.rowsPerPage, _rowCount),
+      _rowCount,
+      _rowCountApproximate,
+    );
+
+    if (widget.source.lastDetails != null &&
+        widget.source.lastDetails!.filteredRows != null) {
+      //Filtered data source show addtional information
+      amountText += ' from (${widget.source.lastDetails!.totalRows})';
+    }
+
+    return amountText;
   }
 }

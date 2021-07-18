@@ -4,6 +4,7 @@ import 'package:advanced_datatable/advancedDataTableSource.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import 'company_contact.dart';
 
 void main() {
@@ -65,6 +66,24 @@ class _MyHomePageState extends State<MyHomePage> {
             DataColumn(label: Text('Last name'), onSort: setSort),
             DataColumn(label: Text('Phone'), onSort: setSort),
           ],
+          //Optianl override to support custom data row text
+          getFooterRowText:
+              (startRow, pageSize, totalFilter, totalRowsWithoutFilter) {
+            final localizations = MaterialLocalizations.of(context);
+            var amountText = localizations.pageRowsInfoTitle(
+              startRow,
+              pageSize,
+              totalFilter ?? totalRowsWithoutFilter,
+              false,
+            );
+
+            if (totalFilter != null) {
+              //Filtered data source show addtional information
+              amountText += ' filtered from ($totalFilter)';
+            }
+
+            return amountText;
+          },
         ),
       ),
     );
@@ -122,6 +141,7 @@ class ExampleSource extends AdvancedDataTableSource<CompanyContact> {
         (data['rows'] as List<dynamic>)
             .map((json) => CompanyContact.fromJson(json))
             .toList(),
+        filteredRows: data['totalRows'],
       );
     } else {
       throw Exception('Unable to query remote server');

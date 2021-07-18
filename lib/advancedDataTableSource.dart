@@ -28,7 +28,8 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
           sortAscending: sortAsceding,
         ),
       );
-      return lastDetails?.totalRows ?? 0;
+      //If the remote source is filtered, its the important upper limit
+      return lastDetails?.filteredRows ?? lastDetails?.totalRows ?? 0;
     } catch (error) {
       return Future.error(error);
     }
@@ -51,8 +52,13 @@ class NextPageRequest {
 }
 
 class RemoteDataSourceDetails<T> {
+  final int? filteredRows;
   final int totalRows;
   final List<T> rows;
 
-  RemoteDataSourceDetails(this.totalRows, this.rows);
+  RemoteDataSourceDetails(
+    this.totalRows,
+    this.rows, {
+    this.filteredRows,
+  });
 }

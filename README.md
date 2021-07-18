@@ -76,6 +76,79 @@ You can set a custom loading and error widget by using the following props:
 
 The above props are functions that will be run when the widget is needed and have to return a single widget.
 
+## Server side filter
+
+To show the user that a filter is live you should return from your data backend always two numbers:
+
+* total number of rows without any filter
+* total number of rows with the current active filter (or null if no filter is set, the default)
+
+This can be done by setting filteredRows to a none null value. If filteredRows is set, advanced_datatable will treat
+this as the new total rows but still shows the user the amount of unfiltered rows. If you want to define how this is shown check the [Custom row number label](#custom-row-number-label)
+
+```dart
+
+  class ExampleSource extends AdvancedDataTableSource<RowData> {
+  final data = List<RowData>.generate(
+      13, (index) => RowData(index, 'Value for no. $index'));
+
+  @override
+  DataRow? getRow(int index) {
+    final currentRowData = lastDetails!.rows[index];
+    return DataRow(cells: [
+      DataCell(
+        Text(currentRowData.index.toString()),
+      ),
+      DataCell(
+        Text(currentRowData.value),
+      )
+    ]);
+  }
+
+  @override
+  int get selectedRowCount => 0;
+
+  @override
+  Future<RemoteDataSourceDetails<RowData>> getNextPage(
+      NextPageRequest pageRequest) async {
+    return RemoteDataSourceDetails(
+      data.length,
+      data
+          .skip(pageRequest.offset)
+          .take(pageRequest.pageSize)
+          .toList(),
+      filteredRows: data.length, //the total amount of filtered rows, null by default
+    );
+  }
+}
+```
+
+## Custom row number label
+
+You can override the footer row label to include custom text, this makes sense in case you have server side filter
+and want to include another local or structure in the label:
+```dart
+   getFooterRowText:
+              (startRow, pageSize, totalFilter, totalRowsWithoutFilter) {
+            final localizations = MaterialLocalizations.of(context);
+            var amountText = localizations.pageRowsInfoTitle(
+              startRow,
+              pageSize,
+              totalFilter ?? totalRowsWithoutFilter,
+              false,
+            );
+
+            if (totalFilter != null) {
+              //Filtered data source show addtional information
+              amountText += ' filtered from ($totalFilter)';
+            }
+
+            return amountText;
+          },
+```
+
+
+
 
 # Example
 

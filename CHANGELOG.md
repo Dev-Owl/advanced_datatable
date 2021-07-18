@@ -22,3 +22,8 @@
 * Trigger a remote reload if you want it
 * Updated related packages 
 * New example with filter
+
+## [0.0.5] - 07/18/2021
+
+* Include total and total filtered rows if provided in footer text
+* Allow custom footer text for rows
