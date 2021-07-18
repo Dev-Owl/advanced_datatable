@@ -7,6 +7,11 @@ import 'package:http/http.dart' as http;
 
 import 'company_contact.dart';
 
+//TODO Support server side filter in example
+//First update server side to include a filter
+//Add search bar
+//Update remote data source to use filter
+
 void main() {
   runApp(MyApp());
 }
