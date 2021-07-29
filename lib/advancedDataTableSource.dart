@@ -4,7 +4,7 @@ typedef LoadPageCallback = Future<RemoteDataSourceDetails<F>> Function<F>(
     int pagesize, int offset);
 
 abstract class AdvancedDataTableSource<T> extends DataTableSource {
-  bool get initalRequestCompleted => lastDetails == null ? false : true;
+  bool get initialRequestCompleted => lastDetails == null ? false : true;
   RemoteDataSourceDetails<T>? lastDetails;
 
   Future<RemoteDataSourceDetails<T>> getNextPage(NextPageRequest pageRequest);
@@ -18,14 +18,14 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
   bool forceRemoteReload = false;
 
   Future<int> loadNextPage(int pageSize, int offset, int? columnSortIndex,
-      bool? sortAsceding) async {
+      bool? sortAscending) async {
     try {
       lastDetails = await getNextPage(
         NextPageRequest(
           pageSize,
           offset,
           columnSortIndex: columnSortIndex,
-          sortAscending: sortAsceding,
+          sortAscending: sortAscending,
         ),
       );
       //If the remote source is filtered, its the important upper limit
