@@ -399,15 +399,9 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     final result = <DataRow>[];
     final nextPageFirstRowIndex = firstRowIndex + rowsPerPage;
     var haveProgressIndicator = false;
-    print('firstRow: $firstRowIndex');
-    print('nextPageFirstRowIndex: $nextPageFirstRowIndex');
     for (var index = firstRowIndex; index < nextPageFirstRowIndex; index += 1) {
       DataRow? row;
       if (index < _rowCount || _rowCountApproximate) {
-        print(
-            'index - x: $index - ${(firstRowIndex ~/ rowsPerPage) * rowsPerPage}');
-        print(
-            'index - start: $index - $firstRowIndex = ${index - firstRowIndex}');
         row = _rows.putIfAbsent(
             index,
             () => widget.source.getRow(index -
@@ -551,13 +545,10 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                 key: Key('rowsPerPage'),
                 items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
                 value: widget.rowsPerPage,
-                onTap: () {
-                  print('tapped the rows per page');
-                },
+                onTap: () {},
                 onChanged: (newRowsPerPage) {
                   if (newRowsPerPage != null &&
                       newRowsPerPage != widget.rowsPerPage) {
-                    print('change rows per page to $newRowsPerPage');
                     setLoadNextPage(rowsPerPage: newRowsPerPage);
                     if (widget.onRowsPerPageChanged != null) {
                       widget.onRowsPerPageChanged!(newRowsPerPage);
