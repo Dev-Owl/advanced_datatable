@@ -687,8 +687,8 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       return widget.getFooterRowText!(
         _firstRowIndex + 1,
         math.min(_firstRowIndex + widget.rowsPerPage, _rowCount),
-        widget.source.lastDetails?.totalRows,
-        _rowCount,
+        widget.source.lastDetails?.filteredRows,
+        widget.source.lastDetails?.totalRows ?? 0,
       );
     }
 
