@@ -341,7 +341,14 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     _rows.clear();
 
     rowsPerPage ??= widget.rowsPerPage;
-    firstRowIndex ??= _firstRowIndex;
+    if (widget.source.nextStartIndex != null) {
+      firstRowIndex = widget.source.nextStartIndex!;
+      _firstRowIndex = firstRowIndex;
+      widget.source.nextStartIndex = null;
+    } else {
+      firstRowIndex ??= _firstRowIndex;
+    }
+
     if (remoteReloadRequired(rowsPerPage, firstRowIndex)) {
       loadNextPage = widget.source.loadNextPage(
         rowsPerPage,

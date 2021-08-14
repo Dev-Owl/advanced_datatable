@@ -27,3 +27,9 @@
 
 * Include total and total filtered rows if provided in footer text
 * Allow custom footer text for rows
+
+## [0.0.6] - 08/14/2021
+
+* Updated example to contain usage for server side filter
+* Allow the source to reset the first view index, can be used to go back to page 1
+* Updated test cases to support new functions

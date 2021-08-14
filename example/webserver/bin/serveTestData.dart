@@ -87,13 +87,23 @@ Future main() async {
           int.parse(req.requestedUri.queryParameters['sortIndex'] ?? '1');
       final sortAsc =
           int.parse(req.requestedUri.queryParameters['sortAsc'] ?? '1') == 1;
+      final companyQuery =
+          (req.requestedUri.queryParameters['companyFilter'] ?? '')
+              .trim()
+              .toLowerCase();
 
       fileContent.sort((a, b) => sortContacts(a, b, sortIndex, sortAsc));
       req.response.write(
         jsonEncode(
           ResponseModel(
             fileContent.length,
-            fileContent.skip(offset).take(pageSize).toList(),
+            fileContent
+                .where((company) =>
+                    companyQuery.isEmpty ||
+                    company.companyName.toLowerCase().contains(companyQuery))
+                .skip(offset)
+                .take(pageSize)
+                .toList(),
           ),
         ),
       );

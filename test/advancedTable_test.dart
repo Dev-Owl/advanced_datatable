@@ -198,4 +198,31 @@ void main() {
     await tester.pumpAndSettle();
     expect(lastLoad, equals(source.lastLoad));
   });
+
+  testWidgets('Force page index reload', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget());
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    var lastLoad = source.lastLoad;
+    //This should not change the last load time
+    source.triggerListeners();
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(lastLoad, equals(source.lastLoad));
+
+    //Move to second page
+    expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.chevron_right));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('15'), findsOneWidget);
+
+    //Now remote load should work
+    source.setNextView();
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(lastLoad, isNot(equals(source.lastLoad)));
+    expect(source.nextStartIndex, isNull);
+  });
 }

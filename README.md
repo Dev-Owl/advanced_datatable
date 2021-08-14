@@ -85,6 +85,22 @@ To show the user that a filter is live you should return from your data backend 
 
 This can be done by setting filteredRows to a none null value. If filteredRows is set, advanced_datatable will treat
 this as the new total rows but still shows the user the amount of unfiltered rows. If you want to define how this is shown check the [Custom row number label](#custom-row-number-label)
+To ensure that in case a filter was applied to the data your table starts on page 1 again, call `setNextView();` function inside your AdvancedDataTableSource (it will trigger the reload for you):
+
+```dart
+class ExampleSource extends AdvancedDataTableSource<RowData> {
+  
+   //....
+
+  void filterServerSide(String filterQuery) {
+    lastSearchTerm = filterQuery.toLowerCase().trim();
+    setNextView();
+  }
+
+   //....
+}
+```
+The example below shows how to set the values to report the data back to the Widget:
 
 ```dart
 
@@ -122,6 +138,7 @@ this as the new total rows but still shows the user the amount of unfiltered row
   }
 }
 ```
+The example code here in the repository has a full stack example including the server side code to show case filters. 
 
 ## Custom row number label
 

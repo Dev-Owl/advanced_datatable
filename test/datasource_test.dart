@@ -31,4 +31,10 @@ void main() {
     //By default off
     expect(source.requireRemoteReload(), equals(false));
   });
+
+  test('Force next page off', () async {
+    final source = TestSource();
+    //By default off
+    expect(source.nextStartIndex, isNull);
+  });
 }

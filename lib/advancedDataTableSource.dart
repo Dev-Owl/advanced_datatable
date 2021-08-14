@@ -16,6 +16,15 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   bool forceRemoteReload = false;
+  int? nextStartIndex;
+
+  ///Sets the next view state for the table, this can be used to go back to
+  ///any start view index (page), will trigger a reload
+  void setNextView({int startIndex = 0}) {
+    forceRemoteReload = true;
+    nextStartIndex = startIndex;
+    notifyListeners();
+  }
 
   Future<int> loadNextPage(int pageSize, int offset, int? columnSortIndex,
       bool? sortAscending) async {
