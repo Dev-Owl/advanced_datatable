@@ -194,9 +194,9 @@ class ExampleSource extends AdvancedDataTableSource<CompanyContact> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return RemoteDataSourceDetails(
-        data['totalRows'],
+        int.parse( data['totalRows'].toString()),
         (data['rows'] as List<dynamic>)
-            .map((json) => CompanyContact.fromJson(json))
+            .map((json) => CompanyContact.fromJson(json as Map<String,dynamic>))
             .toList(),
         filteredRows: lastSearchTerm.isNotEmpty
             ? (data['rows'] as List<dynamic>).length
