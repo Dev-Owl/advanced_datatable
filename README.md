@@ -31,6 +31,8 @@ to have named boolean paramters. The parameter `sortAscending` was moved to be a
 
 You can find a demo using a remote server following the link below, while using the page check your Network Monitor F12 to see what data is actually loaded when you switch pages or change the number of rows. The remote server has 1000 rows, your client will only get a subset of it at any time. The remote server will also take care of the selected order (otherwise it would not be able to page the data correctly).
 
+Use the top right action button to toggle the footers.
+
 [Online Demo](https://dev-owl.github.io/advanced_datatable/)
 
 ## Hide blank rows
