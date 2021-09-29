@@ -2,7 +2,7 @@ import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'testHelper.dart';
+import 'test_helper.dart';
 
 void main() {
   final source = TestSource();
@@ -10,7 +10,7 @@ void main() {
   Widget testWidget() => MaterialApp(
         home: Scaffold(
           body: AdvancedPaginatedDataTable(
-            columns: [
+            columns: const [
               DataColumn(
                 label: Text('Id'),
               ),
@@ -59,24 +59,25 @@ void main() {
             home: Scaffold(
               body: SingleChildScrollView(
                 child: AdvancedPaginatedDataTable(
-                    rowsPerPage: rowsPerPage ?? 10,
-                    availableRowsPerPage: [
-                      10,
-                      20,
-                      30,
-                      45,
-                    ],
-                    columns: [
-                      DataColumn(
-                        label: Text('Id'),
-                      ),
-                    ],
-                    source: TestSource(),
-                    onRowsPerPageChanged: (r) {
-                      setState(() {
-                        rowsPerPage = r;
-                      });
-                    }),
+                  rowsPerPage: rowsPerPage ?? 10,
+                  availableRowsPerPage: const [
+                    10,
+                    20,
+                    30,
+                    45,
+                  ],
+                  columns: const [
+                    DataColumn(
+                      label: Text('Id'),
+                    ),
+                  ],
+                  source: TestSource(),
+                  onRowsPerPageChanged: (r) {
+                    setState(() {
+                      rowsPerPage = r;
+                    });
+                  },
+                ),
               ),
             ),
           ),
@@ -91,12 +92,14 @@ void main() {
     //Find the totoal rows avalible
     expect(find.textContaining('100'), findsOneWidget);
     //Find the rows per page dialog
-    expect(find.byKey(Key('rowsPerPage')), findsOneWidget);
+    expect(find.byKey(const Key('rowsPerPage')), findsOneWidget);
 
     expect(
-        (tester.widget(find.byKey(Key('rowsPerPage'))) as DropdownButton).value,
-        10);
-    await tester.tap(find.byKey(Key('rowsPerPage')));
+      (tester.widget(find.byKey(const Key('rowsPerPage'))) as DropdownButton)
+          .value,
+      10,
+    );
+    await tester.tap(find.byKey(const Key('rowsPerPage')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('45').last);
@@ -120,39 +123,42 @@ void main() {
             home: Scaffold(
               body: SingleChildScrollView(
                 child: AdvancedPaginatedDataTable(
-                    sortColumnIndex: sortIndex,
-                    sortAscending: sortAsc,
-                    rowsPerPage: rowsPerPage ?? 10,
-                    availableRowsPerPage: [
-                      10,
-                      20,
-                      30,
-                      45,
-                    ],
-                    columns: [
-                      DataColumn(
-                          label: Text('Id'),
-                          onSort: (i, asc) {
-                            setState(() {
-                              sortIndex = i;
-                              sortAsc = asc;
-                            });
-                          }),
-                      DataColumn(
-                          label: Text('Value'),
-                          onSort: (i, asc) {
-                            setState(() {
-                              sortIndex = i;
-                              sortAsc = asc;
-                            });
-                          }),
-                    ],
-                    source: TestSource(twoColumn: true),
-                    onRowsPerPageChanged: (r) {
-                      setState(() {
-                        rowsPerPage = r;
-                      });
-                    }),
+                  sortColumnIndex: sortIndex,
+                  sortAscending: sortAsc,
+                  rowsPerPage: rowsPerPage ?? 10,
+                  availableRowsPerPage: const [
+                    10,
+                    20,
+                    30,
+                    45,
+                  ],
+                  columns: [
+                    DataColumn(
+                      label: const Text('Id'),
+                      onSort: (i, asc) {
+                        setState(() {
+                          sortIndex = i;
+                          sortAsc = asc;
+                        });
+                      },
+                    ),
+                    DataColumn(
+                      label: const Text('Value'),
+                      onSort: (i, asc) {
+                        setState(() {
+                          sortIndex = i;
+                          sortAsc = asc;
+                        });
+                      },
+                    ),
+                  ],
+                  source: TestSource(twoColumn: true),
+                  onRowsPerPageChanged: (r) {
+                    setState(() {
+                      rowsPerPage = r;
+                    });
+                  },
+                ),
               ),
             ),
           ),
@@ -205,7 +211,7 @@ void main() {
     await tester.pump();
     await tester.pumpAndSettle();
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    var lastLoad = source.lastLoad;
+    final lastLoad = source.lastLoad;
     //This should not change the last load time
     source.triggerListeners();
     await tester.pump();

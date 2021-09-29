@@ -1,4 +1,4 @@
-import 'package:advanced_datatable/advancedDataTableSource.dart';
+import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:flutter/material.dart';
 
 class TestData {
@@ -33,7 +33,7 @@ class TestSource extends AdvancedDataTableSource<TestData> {
     ];
     if (twoColumn) {
       cells.add(
-        DataCell(
+        const DataCell(
           Text(
             'Column two',
           ),
@@ -51,12 +51,13 @@ class TestSource extends AdvancedDataTableSource<TestData> {
 
   @override
   Future<RemoteDataSourceDetails<TestData>> getNextPage(
-      NextPageRequest pageRequest) async {
+    NextPageRequest pageRequest,
+  ) async {
     lastOffset = pageRequest.offset;
     lastLoad = DateTime.now();
     return RemoteDataSourceDetails<TestData>(
-        totalRows,
-        List<TestData>.generate(
-            pageRequest.pageSize, (index) => TestData(index)));
+      totalRows,
+      List<TestData>.generate(pageRequest.pageSize, (index) => TestData(index)),
+    );
   }
 }

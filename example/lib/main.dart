@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:advanced_datatable/advancedDataTableSource.dart';
+import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,29 +23,29 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Advanced DataTable Demo'),
+      home: const MyHomePage(title: 'Advanced DataTable Demo'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, this.title}) : super(key: key);
+  const MyHomePage({Key? key, this.title}) : super(key: key);
   final String? title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var rowsPerPage = AdvancedPaginatedDataTable.defaultRowsPerPage;
-  final source = ExampleSource();
-  var sortIndex = 0;
-  var sortAsc = true;
-  final searchController = TextEditingController();
+  var _rowsPerPage = AdvancedPaginatedDataTable.defaultRowsPerPage;
+  final _source = ExampleSource();
+  var _sortIndex = 0;
+  var _sortAsc = true;
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    searchController.text = '';
+    _searchController.text = '';
   }
 
   @override
@@ -57,21 +56,20 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.only(left: 10),
                     child: TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
                         labelText: 'Search by company',
                       ),
                       onSubmitted: (vlaue) {
-                        source.filterServerSide(searchController.text);
+                        _source.filterServerSide(_searchController.text);
                       },
                     ),
                   ),
@@ -79,40 +77,56 @@ class _MyHomePageState extends State<MyHomePage> {
                 IconButton(
                   onPressed: () {
                     setState(() {
-                      searchController.text = '';
+                      _searchController.text = '';
                     });
-                    source.filterServerSide(searchController.text);
+                    _source.filterServerSide(_searchController.text);
                   },
-                  icon: Icon(Icons.clear),
+                  icon: const Icon(Icons.clear),
                 ),
                 IconButton(
                   onPressed: () =>
-                      source.filterServerSide(searchController.text),
-                  icon: Icon(Icons.search),
+                      _source.filterServerSide(_searchController.text),
+                  icon: const Icon(Icons.search),
                 ),
               ],
             ),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
-              source: source,
-              sortAscending: sortAsc,
-              sortColumnIndex: sortIndex,
+              source: _source,
+              sortAscending: _sortAsc,
+              sortColumnIndex: _sortIndex,
               showFirstLastButtons: true,
-              rowsPerPage: rowsPerPage,
-              availableRowsPerPage: [10, 20, 30, 50],
+              rowsPerPage: _rowsPerPage,
+              availableRowsPerPage: const [10, 20, 30, 50],
               onRowsPerPageChanged: (newRowsPerPage) {
                 if (newRowsPerPage != null) {
                   setState(() {
-                    rowsPerPage = newRowsPerPage;
+                    _rowsPerPage = newRowsPerPage;
                   });
                 }
               },
               columns: [
-                DataColumn(label: Text('ID'), numeric: true, onSort: setSort),
-                DataColumn(label: Text('Company'), onSort: setSort),
-                DataColumn(label: Text('First name'), onSort: setSort),
-                DataColumn(label: Text('Last name'), onSort: setSort),
-                DataColumn(label: Text('Phone'), onSort: setSort),
+                DataColumn(
+                  label: const Text('ID'),
+                  numeric: true,
+                  onSort: setSort,
+                ),
+                DataColumn(
+                  label: const Text('Company'),
+                  onSort: setSort,
+                ),
+                DataColumn(
+                  label: const Text('First name'),
+                  onSort: setSort,
+                ),
+                DataColumn(
+                  label: const Text('Last name'),
+                  onSort: setSort,
+                ),
+                DataColumn(
+                  label: const Text('Phone'),
+                  onSort: setSort,
+                ),
               ],
               //Optianl override to support custom data row text / translation
               getFooterRowText:
@@ -139,9 +153,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // ignore: avoid_positional_boolean_parameters
   void setSort(int i, bool asc) => setState(() {
-        sortIndex = i;
-        sortAsc = asc;
+        _sortIndex = i;
+        _sortAsc = asc;
       });
 }
 
@@ -158,6 +173,7 @@ class ExampleSource extends AdvancedDataTableSource<CompanyContact> {
   @override
   int get selectedRowCount => selectedIds.length;
 
+  // ignore: avoid_positional_boolean_parameters
   void selectedRow(String id, bool newSelectState) {
     if (selectedIds.contains(id)) {
       selectedIds.remove(id);
@@ -174,7 +190,8 @@ class ExampleSource extends AdvancedDataTableSource<CompanyContact> {
 
   @override
   Future<RemoteDataSourceDetails<CompanyContact>> getNextPage(
-      NextPageRequest pageRequest) async {
+    NextPageRequest pageRequest,
+  ) async {
     //the remote data source has to support the pagaing and sorting
     final queryParameter = <String, dynamic>{
       'offset': pageRequest.offset.toString(),
@@ -194,9 +211,11 @@ class ExampleSource extends AdvancedDataTableSource<CompanyContact> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return RemoteDataSourceDetails(
-        int.parse( data['totalRows'].toString()),
+        int.parse(data['totalRows'].toString()),
         (data['rows'] as List<dynamic>)
-            .map((json) => CompanyContact.fromJson(json as Map<String,dynamic>))
+            .map(
+              (json) => CompanyContact.fromJson(json as Map<String, dynamic>),
+            )
             .toList(),
         filteredRows: lastSearchTerm.isNotEmpty
             ? (data['rows'] as List<dynamic>).length

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 typedef LoadPageCallback = Future<RemoteDataSourceDetails<F>> Function<F>(
-    int pagesize, int offset);
+  int pagesize,
+  int offset,
+);
 
 abstract class AdvancedDataTableSource<T> extends DataTableSource {
-  bool get initialRequestCompleted => lastDetails == null ? false : true;
+  bool get initialRequestCompleted => lastDetails != null;
   RemoteDataSourceDetails<T>? lastDetails;
 
   Future<RemoteDataSourceDetails<T>> getNextPage(NextPageRequest pageRequest);
@@ -26,8 +28,12 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
     notifyListeners();
   }
 
-  Future<int> loadNextPage(int pageSize, int offset, int? columnSortIndex,
-      bool? sortAscending) async {
+  Future<int> loadNextPage(
+    int pageSize,
+    int offset,
+    int? columnSortIndex, {
+    bool? sortAscending,
+  }) async {
     try {
       lastDetails = await getNextPage(
         NextPageRequest(
@@ -56,8 +62,12 @@ class NextPageRequest {
   final int? columnSortIndex;
   final bool? sortAscending;
 
-  NextPageRequest(this.pageSize, this.offset,
-      {this.columnSortIndex, this.sortAscending});
+  NextPageRequest(
+    this.pageSize,
+    this.offset, {
+    this.columnSortIndex,
+    this.sortAscending,
+  });
 }
 
 class RemoteDataSourceDetails<T> {

@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import 'testHelper.dart';
+import 'test_helper.dart';
 
 void main() {
   test('Load and check test source', () async {
@@ -12,7 +12,7 @@ void main() {
     expect(source.lastDetails, null);
 
     //Load the first 10 rows
-    await source.loadNextPage(10, 0, null, null);
+    await source.loadNextPage(10, 0, null);
 
     //Always report back the total rows
     expect(source.rowCount, TestSource.totalRows);

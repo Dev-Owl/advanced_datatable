@@ -8,7 +8,7 @@ import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'advancedDataTableSource.dart';
+import 'advanced_datatable_source.dart';
 
 typedef GetWidgetCallBack = Widget Function();
 typedef GetFooterRowText = String Function(
@@ -97,15 +97,19 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
     this.getFooterRowText,
   })  : assert(actions == null || header != null),
         assert(columns.isNotEmpty),
-        assert(sortColumnIndex == null ||
-            (sortColumnIndex >= 0 && sortColumnIndex < columns.length)),
+        assert(
+          sortColumnIndex == null ||
+              (sortColumnIndex >= 0 && sortColumnIndex < columns.length),
+        ),
         assert(rowsPerPage > 0),
-        assert(() {
-          if (onRowsPerPageChanged != null) {
-            assert(availableRowsPerPage.contains(rowsPerPage));
-          }
-          return true;
-        }()),
+        assert(
+          () {
+            if (onRowsPerPageChanged != null) {
+              assert(availableRowsPerPage.contains(rowsPerPage));
+            }
+            return true;
+          }(),
+        ),
         super(key: key);
 
   /// Add empty/blank lines to the table if not enough records are present
@@ -320,17 +324,17 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       widget.source.forceRemoteReload = false;
       return true;
     }
-    rowsPerPage ??= widget.rowsPerPage;
-    firstRowIndex ??= _firstRowIndex;
+    final _rowsPerPage = rowsPerPage ?? widget.rowsPerPage;
+    final firstRowIndexSafe = firstRowIndex ?? _firstRowIndex;
 
     if (lastOrderColumn != widget.sortColumnIndex ||
         lastOrderDirection != widget.sortAscending ||
-        lastRecordsByPage != rowsPerPage ||
-        lastOffset != firstRowIndex) {
+        lastRecordsByPage != _rowsPerPage ||
+        lastOffset != firstRowIndexSafe) {
       lastOrderColumn = widget.sortColumnIndex;
       lastOrderDirection = widget.sortAscending;
-      lastRecordsByPage = rowsPerPage;
-      lastOffset = firstRowIndex;
+      lastRecordsByPage = _rowsPerPage;
+      lastOffset = firstRowIndexSafe;
 
       return true;
     }
@@ -339,22 +343,22 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
 
   void setLoadNextPage({int? rowsPerPage, int? firstRowIndex}) {
     _rows.clear();
-
+    late final int _finalFirstRowIndex;
     rowsPerPage ??= widget.rowsPerPage;
     if (widget.source.nextStartIndex != null) {
-      firstRowIndex = widget.source.nextStartIndex!;
-      _firstRowIndex = firstRowIndex;
+      _finalFirstRowIndex = widget.source.nextStartIndex!;
+      _firstRowIndex = _finalFirstRowIndex;
       widget.source.nextStartIndex = null;
     } else {
-      firstRowIndex ??= _firstRowIndex;
+      _finalFirstRowIndex = _firstRowIndex;
     }
 
     if (remoteReloadRequired(rowsPerPage, firstRowIndex)) {
       loadNextPage = widget.source.loadNextPage(
         rowsPerPage,
-        firstRowIndex,
+        _finalFirstRowIndex,
         widget.sortColumnIndex,
-        widget.sortAscending,
+        sortAscending: widget.sortAscending,
       );
     }
   }
@@ -410,9 +414,9 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       DataRow? row;
       if (index < _rowCount || _rowCountApproximate) {
         row = _rows.putIfAbsent(
-            index,
-            () => widget.source.getRow(index -
-                firstRowIndex)); //index - (firstRowIndex ~/ rowsPerPage) * rowsPerPage)
+          index,
+          () => widget.source.getRow(index - firstRowIndex),
+        ); //index - (firstRowIndex ~/ rowsPerPage) * rowsPerPage)
 
         if (row == null && !haveProgressIndicator) {
           row ??= _getProgressIndicatorRowFor(index);
@@ -455,36 +459,38 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
   Widget build(BuildContext context) {
     //Adjusted to first request the data followed by rendering the original table
     return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-      return FutureBuilder<int>(
-        future: loadNextPage,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            _rowCount = snapshot.data ?? 0;
-            return buildTableWhenReady(constraints);
-          } else {
-            if (snapshot.hasError) {
-              if (widget.errorWidget != null) {
-                return widget.errorWidget!();
-              } else {
-                return Center(
-                  child: Text(
-                      'Something went wrong: ${snapshot.error?.toString() ?? 'No error information'}'),
-                );
-              }
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return FutureBuilder<int>(
+          future: loadNextPage,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              _rowCount = snapshot.data ?? 0;
+              return buildTableWhenReady(constraints);
             } else {
-              if (widget.loadingWidget != null) {
-                return widget.loadingWidget!();
+              if (snapshot.hasError) {
+                if (widget.errorWidget != null) {
+                  return widget.errorWidget!();
+                } else {
+                  return Center(
+                    child: Text(
+                      'Something went wrong: ${snapshot.error?.toString() ?? 'No error information'}',
+                    ),
+                  );
+                }
               } else {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+                if (widget.loadingWidget != null) {
+                  return widget.loadingWidget!();
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
               }
             }
-          }
-        },
-      );
-    });
+          },
+        );
+      },
+    );
   }
 
   ///Original build method from the Flutter PageinatedDataTable
@@ -506,9 +512,11 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
         startPadding = 12.0;
       }
     } else if (widget.header != null) {
-      headerWidgets.add(Expanded(
-        child: Text(localizations.selectedRowCountTitle(_selectedRowCount)),
-      ));
+      headerWidgets.add(
+        Expanded(
+          child: Text(localizations.selectedRowCountTitle(_selectedRowCount)),
+        ),
+      );
     }
     if (widget.actions != null) {
       headerWidgets.addAll(
@@ -538,18 +546,19 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       }).toList();
       footerWidgets.addAll(<Widget>[
         Container(
-            width:
-                14.0), // to match trailing padding in case we overflow and end up scrolling
+          width: 14.0,
+        ), // to match trailing padding in case we overflow and end up scrolling
         Text(localizations.rowsPerPageTitle),
         ConstrainedBox(
           constraints: const BoxConstraints(
-              minWidth: 64.0), // 40.0 for the text, 24.0 for the icon
+            minWidth: 64.0,
+          ), // 40.0 for the text, 24.0 for the icon
           child: Align(
             alignment: AlignmentDirectional.centerEnd,
             child: DropdownButtonHideUnderline(
-              key: Key('rowsPerPageParent'),
+              key: const Key('rowsPerPageParent'),
               child: DropdownButton<int>(
-                key: Key('rowsPerPage'),
+                key: const Key('rowsPerPage'),
                 items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
                 value: widget.rowsPerPage,
                 onTap: () {},
@@ -558,12 +567,11 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                       newRowsPerPage != widget.rowsPerPage) {
                     setLoadNextPage(rowsPerPage: newRowsPerPage);
                     if (widget.onRowsPerPageChanged != null) {
-                      widget.onRowsPerPageChanged!(newRowsPerPage);
+                      widget.onRowsPerPageChanged?.call(newRowsPerPage);
                     }
                   }
                 },
                 style: footerTextStyle,
-                iconSize: 24.0,
               ),
             ),
           ),
@@ -631,7 +639,9 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                         : null,
                     child: Padding(
                       padding: EdgeInsetsDirectional.only(
-                          start: startPadding, end: 14.0),
+                        start: startPadding,
+                        end: 14.0,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: headerWidgets,
