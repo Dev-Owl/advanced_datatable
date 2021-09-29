@@ -33,3 +33,9 @@
 * Updated example to contain usage for server side filter
 * Allow the source to reset the first view index, can be used to go back to page 1
 * Updated test cases to support new functions
+
+## [0.0.7] - 10/03/2021
+
+* Including Flutter Lint
+* Customer table footer support, render your complete own footer if you wish too
+* BREAKING CHANGES, see the readme

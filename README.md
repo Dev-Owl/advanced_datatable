@@ -12,6 +12,20 @@ Advanced Datatable uses the Flutter [PaginatedDataTable Widget](https://api.flut
 * Support for async row loading, connect the table to a huge data source and only load the current page
 * Custom loading and error widgets
 * Correct display of data size and position (1 of 10 from 100) in the footer
+* Customr footer 
+
+# Breaking changes in version 0.0.7
+
+Please note, due to code clean ups please ensure you do the following:
+
+Change the old import:
+`import 'package:advanced_datatable/advancedDataTableSource.dart';`
+
+To the new one: 
+`import 'package:advanced_datatable/advanced_datatable_source.dart';`
+
+In case you used `AdvancedDataTableSource.loadNextPage()` please note, the signature has changed
+to have named boolean paramters. The parameter `sortAscending` was moved to be a named one.
 
 ## Web demo
 
