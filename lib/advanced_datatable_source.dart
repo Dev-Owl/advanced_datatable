@@ -6,9 +6,14 @@ typedef LoadPageCallback = Future<RemoteDataSourceDetails<F>> Function<F>(
 );
 
 abstract class AdvancedDataTableSource<T> extends DataTableSource {
+  /// True if there is any data loaded in this source
   bool get initialRequestCompleted => lastDetails != null;
+
+  /// Last loaded data from the remote data source
   RemoteDataSourceDetails<T>? lastDetails;
 
+  /// Called by the base data source class to load data, implement your backend
+  /// call in this function
   Future<RemoteDataSourceDetails<T>> getNextPage(NextPageRequest pageRequest);
 
   @override
@@ -17,7 +22,11 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
   @override
   bool get isRowCountApproximate => false;
 
+  /// Set this to true to indicate that a reload should happen even if the page
+  /// details did not change
   bool forceRemoteReload = false;
+
+  /// The index for the next page to start
   int? nextStartIndex;
 
   ///Sets the next view state for the table, this can be used to go back to
@@ -28,6 +37,7 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
     notifyListeners();
   }
 
+  /// Called by the advanced datatable controll to trigger a page load
   Future<int> loadNextPage(
     int pageSize,
     int offset,
@@ -57,9 +67,19 @@ abstract class AdvancedDataTableSource<T> extends DataTableSource {
 }
 
 class NextPageRequest {
+  /// The total amount of rows by page
   final int pageSize;
+
+  /// The offset from the start of the remote data source
+  ///
+  /// Example:
+  /// If amount by page is 10 and the offset is 10 you are viewing the 2nd page
   final int offset;
+
+  /// What column should be sorted by the remote backend
   final int? columnSortIndex;
+
+  /// Sort order
   final bool? sortAscending;
 
   NextPageRequest(
@@ -71,8 +91,13 @@ class NextPageRequest {
 }
 
 class RemoteDataSourceDetails<T> {
+  /// The total amount of rows after a filter was applied
   final int? filteredRows;
+
+  /// All avalible rows in the remote data source without any filter
   final int totalRows;
+
+  ///The data retured by the remote data source
   final List<T> rows;
 
   RemoteDataSourceDetails(

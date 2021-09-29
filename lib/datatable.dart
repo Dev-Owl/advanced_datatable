@@ -11,6 +11,10 @@ import 'package:flutter/widgets.dart';
 import 'advanced_datatable_source.dart';
 
 typedef GetWidgetCallBack = Widget Function();
+typedef GetFooterCallBack = Widget Function(
+  AdvancedDataTableSource currentSource,
+  int currentOffset,
+);
 typedef GetFooterRowText = String Function(
   int startRow,
   int pageSize,
@@ -95,6 +99,7 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
     this.loadingWidget,
     this.errorWidget,
     this.getFooterRowText,
+    this.customTableFooter,
   })  : assert(actions == null || header != null),
         assert(columns.isNotEmpty),
         assert(
@@ -253,6 +258,11 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
   /// of the table and the checkbox, as well as the margin between the checkbox
   /// and the content in the first data column. This value defaults to 24.0.
   final double? checkboxHorizontalMargin;
+
+  /// Create your own custom Footer control
+  ///
+  /// If null, the default footer will be generated.
+  final GetFooterCallBack? customTableFooter;
 
   @override
   PaginatedDataTableState createState() => PaginatedDataTableState();
@@ -530,87 +540,6 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       );
     }
 
-    // FOOTER
-    final footerTextStyle = themeData.textTheme.caption;
-    final footerWidgets = <Widget>[];
-    if (widget.onRowsPerPageChanged != null) {
-      final List<Widget> availableRowsPerPage =
-          widget.availableRowsPerPage.map<DropdownMenuItem<int>>((int value) {
-        return DropdownMenuItem<int>(
-          value: value,
-          key: ValueKey('opt_$value'),
-          child: Text(
-            '$value',
-          ),
-        );
-      }).toList();
-      footerWidgets.addAll(<Widget>[
-        Container(
-          width: 14.0,
-        ), // to match trailing padding in case we overflow and end up scrolling
-        Text(localizations.rowsPerPageTitle),
-        ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: 64.0,
-          ), // 40.0 for the text, 24.0 for the icon
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: DropdownButtonHideUnderline(
-              key: const Key('rowsPerPageParent'),
-              child: DropdownButton<int>(
-                key: const Key('rowsPerPage'),
-                items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
-                value: widget.rowsPerPage,
-                onTap: () {},
-                onChanged: (newRowsPerPage) {
-                  if (newRowsPerPage != null &&
-                      newRowsPerPage != widget.rowsPerPage) {
-                    setLoadNextPage(rowsPerPage: newRowsPerPage);
-                    if (widget.onRowsPerPageChanged != null) {
-                      widget.onRowsPerPageChanged?.call(newRowsPerPage);
-                    }
-                  }
-                },
-                style: footerTextStyle,
-              ),
-            ),
-          ),
-        ),
-      ]);
-    }
-    footerWidgets.addAll(<Widget>[
-      Container(width: 32.0),
-      Text(
-        buildDataAmountText(),
-      ),
-      Container(width: 32.0),
-      if (widget.showFirstLastButtons)
-        IconButton(
-          icon: const Icon(Icons.skip_previous),
-          padding: EdgeInsets.zero,
-          onPressed: _firstRowIndex <= 0 ? null : _handleFirst,
-        ),
-      IconButton(
-        icon: const Icon(Icons.chevron_left),
-        padding: EdgeInsets.zero,
-        tooltip: localizations.previousPageTooltip,
-        onPressed: _firstRowIndex <= 0 ? null : _handlePrevious,
-      ),
-      Container(width: 24.0),
-      IconButton(
-        icon: const Icon(Icons.chevron_right),
-        padding: EdgeInsets.zero,
-        tooltip: localizations.nextPageTooltip,
-        onPressed: _isNextPageUnavailable() ? null : _handleNext,
-      ),
-      if (widget.showFirstLastButtons)
-        IconButton(
-          icon: const Icon(Icons.skip_next),
-          padding: EdgeInsets.zero,
-          onPressed: _isNextPageUnavailable() ? null : _handleLast,
-        ),
-      Container(width: 14.0),
-    ]);
     return Card(
       semanticContainer: false,
       child: Column(
@@ -675,28 +604,124 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
               ),
             ),
           ),
-          DefaultTextStyle(
-            style: footerTextStyle!,
-            child: IconTheme.merge(
-              data: const IconThemeData(
-                opacity: 0.54,
-              ),
-              child: SizedBox(
-                height: 56.0,
-                child: SingleChildScrollView(
-                  dragStartBehavior: widget.dragStartBehavior,
-                  scrollDirection: Axis.horizontal,
-                  reverse: true,
-                  child: Row(
-                    children: footerWidgets,
-                  ),
+          createTableFooter(),
+        ],
+      ),
+    );
+  }
+
+  Widget createTableFooter() {
+    //Try to get the user custom footer
+    final userFooterWidget = widget.customTableFooter?.call(
+      widget.source,
+      _firstRowIndex,
+    );
+    if (userFooterWidget == null) {
+      //No footer present render the default one
+      final themeData = Theme.of(context);
+      final localizations = MaterialLocalizations.of(context);
+      final footerTextStyle = themeData.textTheme.caption;
+      final footerWidgets = <Widget>[];
+      if (widget.onRowsPerPageChanged != null) {
+        final List<Widget> availableRowsPerPage =
+            widget.availableRowsPerPage.map<DropdownMenuItem<int>>((int value) {
+          return DropdownMenuItem<int>(
+            value: value,
+            key: ValueKey('opt_$value'),
+            child: Text(
+              '$value',
+            ),
+          );
+        }).toList();
+        footerWidgets.addAll(<Widget>[
+          Container(
+            width: 14.0,
+          ), // to match trailing padding in case we overflow and end up scrolling
+          Text(localizations.rowsPerPageTitle),
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: 64.0,
+            ), // 40.0 for the text, 24.0 for the icon
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: DropdownButtonHideUnderline(
+                key: const Key('rowsPerPageParent'),
+                child: DropdownButton<int>(
+                  key: const Key('rowsPerPage'),
+                  items: availableRowsPerPage.cast<DropdownMenuItem<int>>(),
+                  value: widget.rowsPerPage,
+                  onTap: () {},
+                  onChanged: (newRowsPerPage) {
+                    if (newRowsPerPage != null &&
+                        newRowsPerPage != widget.rowsPerPage) {
+                      setLoadNextPage(rowsPerPage: newRowsPerPage);
+                      if (widget.onRowsPerPageChanged != null) {
+                        widget.onRowsPerPageChanged?.call(newRowsPerPage);
+                      }
+                    }
+                  },
+                  style: footerTextStyle,
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
+        ]);
+      }
+      footerWidgets.addAll(<Widget>[
+        Container(width: 32.0),
+        Text(
+          buildDataAmountText(),
+        ),
+        Container(width: 32.0),
+        if (widget.showFirstLastButtons)
+          IconButton(
+            icon: const Icon(Icons.skip_previous),
+            padding: EdgeInsets.zero,
+            onPressed: _firstRowIndex <= 0 ? null : _handleFirst,
+          ),
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          padding: EdgeInsets.zero,
+          tooltip: localizations.previousPageTooltip,
+          onPressed: _firstRowIndex <= 0 ? null : _handlePrevious,
+        ),
+        Container(width: 24.0),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          padding: EdgeInsets.zero,
+          tooltip: localizations.nextPageTooltip,
+          onPressed: _isNextPageUnavailable() ? null : _handleNext,
+        ),
+        if (widget.showFirstLastButtons)
+          IconButton(
+            icon: const Icon(Icons.skip_next),
+            padding: EdgeInsets.zero,
+            onPressed: _isNextPageUnavailable() ? null : _handleLast,
+          ),
+        Container(width: 14.0),
+      ]);
+      return DefaultTextStyle(
+        style: footerTextStyle!,
+        child: IconTheme.merge(
+          data: const IconThemeData(
+            opacity: 0.54,
+          ),
+          child: SizedBox(
+            height: 56.0,
+            child: SingleChildScrollView(
+              dragStartBehavior: widget.dragStartBehavior,
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              child: Row(
+                children: footerWidgets,
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return userFooterWidget;
+    }
   }
 
   String buildDataAmountText() {

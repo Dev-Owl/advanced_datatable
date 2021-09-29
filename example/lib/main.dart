@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _sortIndex = 0;
   var _sortAsc = true;
   final _searchController = TextEditingController();
+  var _customFooter = true;
 
   @override
   void initState() {
@@ -53,6 +54,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title!),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.table_chart_outlined),
+            tooltip: 'Change footer',
+            onPressed: () {
+              // handle the press
+              setState(() {
+                _customFooter = !_customFooter;
+              });
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -146,6 +159,58 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 return amountText;
               },
+              customTableFooter: _customFooter
+                  ? (source, offset) {
+                      final maxPagesToShow = 6;
+                      final maxPagesBeforeCurrent = 3;
+                      final lastRequestDetails = source.lastDetails!;
+                      final rowsForPager = lastRequestDetails.filteredRows ??
+                          lastRequestDetails.totalRows;
+                      final totalPages = rowsForPager ~/ _rowsPerPage;
+                      final currentPage = (offset ~/ _rowsPerPage) + 1;
+                      List<int> pageList = [];
+                      if (currentPage > 1) {
+                        pageList.addAll(
+                          List.generate(currentPage - 1, (index) => index + 1),
+                        );
+                        //Keep up to 3 pages before current in the list
+                        pageList.removeWhere(
+                          (element) =>
+                              element < currentPage - maxPagesBeforeCurrent,
+                        );
+                      }
+                      pageList.add(currentPage);
+                      //Add reminding pages after current to the list
+                      pageList.addAll(
+                        List.generate(
+                          maxPagesToShow - (pageList.length - 1),
+                          (index) => (currentPage + 1) + index,
+                        ),
+                      );
+                      pageList.removeWhere((element) => element > totalPages);
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: pageList
+                            .map(
+                              (e) => TextButton(
+                                onPressed: e != currentPage
+                                    ? () {
+                                        //Start index is zero based
+                                        source.setNextView(
+                                          startIndex: (e - 1) * _rowsPerPage,
+                                        );
+                                      }
+                                    : null,
+                                child: Text(
+                                  e.toString(),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      );
+                    }
+                  : null,
             ),
           ],
         ),
