@@ -43,6 +43,66 @@ Set the addEmptyRows property to false, by default its true (to behave as the Fl
 addEmptyRows: false    
 ```
 
+## Cutom footer
+
+```dart
+ AdvancedPaginatedDataTable(
+    // ....
+    customTableFooter: 
+                  (source, offset) {
+                      final maxPagesToShow = 6;
+                      final maxPagesBeforeCurrent = 3;
+                      final lastRequestDetails = source.lastDetails!;
+                      final rowsForPager = lastRequestDetails.filteredRows ??
+                          lastRequestDetails.totalRows;
+                      final totalPages = rowsForPager ~/ _rowsPerPage;
+                      final currentPage = (offset ~/ _rowsPerPage) + 1;
+                      List<int> pageList = [];
+                      if (currentPage > 1) {
+                        pageList.addAll(
+                          List.generate(currentPage - 1, (index) => index + 1),
+                        );
+                        //Keep up to 3 pages before current in the list
+                        pageList.removeWhere(
+                          (element) =>
+                              element < currentPage - maxPagesBeforeCurrent,
+                        );
+                      }
+                      pageList.add(currentPage);
+                      //Add reminding pages after current to the list
+                      pageList.addAll(
+                        List.generate(
+                          maxPagesToShow - (pageList.length - 1),
+                          (index) => (currentPage + 1) + index,
+                        ),
+                      );
+                      pageList.removeWhere((element) => element > totalPages);
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: pageList
+                            .map(
+                              (e) => TextButton(
+                                onPressed: e != currentPage
+                                    ? () {
+                                        //Start index is zero based
+                                        source.setNextView(
+                                          startIndex: (e - 1) * _rowsPerPage,
+                                        );
+                                      }
+                                    : null,
+                                child: Text(
+                                  e.toString(),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      );
+                    },
+            // ....
+    )
+```
+
 ## Support for async row loading
 
 The Original DataSource requires you to load all data in advance and just render it paged, in case your data source is huge and contains a lot of information this might not be the best options.
