@@ -34,8 +34,12 @@
 * Allow the source to reset the first view index, can be used to go back to page 1
 * Updated test cases to support new functions
 
-## [0.0.7] - 10/03/2021
+## [0.0.7] - 10/24/2021
 
+* BREAKING CHANGES, see the readme
 * Including Flutter Lint
 * Customer table footer support, render your complete own footer if you wish too
-* BREAKING CHANGES, see the readme
+* Updated example to support horizontal scroll with flutter 2.5.X
+* New default loading, keep table sceleton and show a centered spinner
+
+
