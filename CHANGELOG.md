@@ -42,4 +42,6 @@
 * Updated example to support horizontal scroll with flutter 2.5.X
 * New default loading, keep table sceleton and show a centered spinner
 
+## [0.0.7+hotfix] - 10/24/2021
 
+* Table now takes full width again

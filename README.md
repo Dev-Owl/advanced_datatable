@@ -12,7 +12,7 @@ Advanced Datatable uses the Flutter [PaginatedDataTable Widget](https://api.flut
 * Support for async row loading, connect the table to a huge data source and only load the current page
 * Custom loading and error widgets
 * Correct display of data size and position (1 of 10 from 100) in the footer
-* Customr footer 
+* Custom footer
 
 # Breaking changes in version 0.0.7
 
