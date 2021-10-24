@@ -620,7 +620,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                   ),
                 ),
               ),
-              createTableFooter(),
+              if (!loading) createTableFooter(),
             ],
           ),
         ),
