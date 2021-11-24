@@ -100,6 +100,7 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
     this.errorWidget,
     this.getFooterRowText,
     this.customTableFooter,
+    this.footerAlignment = MainAxisAlignment.start,
   })  : assert(actions == null || header != null),
         assert(columns.isNotEmpty),
         assert(
@@ -263,6 +264,12 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
   ///
   /// If null, the default footer will be generated.
   final GetFooterCallBack? customTableFooter;
+
+
+  /// The alignment of footer
+  ///
+  /// The default alignment as the default of row alignment
+  MainAxisAlignment footerAlignment;
 
   @override
   PaginatedDataTableState createState() => PaginatedDataTableState();
@@ -735,13 +742,9 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
           ),
           child: SizedBox(
             height: 56.0,
-            child: SingleChildScrollView(
-              dragStartBehavior: widget.dragStartBehavior,
-              scrollDirection: Axis.horizontal,
-              reverse: true,
-              child: Row(
-                children: footerWidgets,
-              ),
+            child: Row(
+              mainAxisAlignment: widget.footerAlignment,
+              children: footerWidgets,
             ),
           ),
         ),
