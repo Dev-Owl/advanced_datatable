@@ -45,3 +45,8 @@
 ## [0.0.7+hotfix] - 10/24/2021
 
 * Table now takes full width again
+
+## [0.0.8] - 06/04/2022
+
+* Allow to set alignment for default footer
+* Show horizontal scrollbar for table content
