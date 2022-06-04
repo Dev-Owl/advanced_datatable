@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'company_contact.dart';
+import 'package:example_adv_datatable/company_contact.dart';
 
 //TODO Support server side filter in example
 //First update server side to include a filter
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _sortIndex = 0;
   var _sortAsc = true;
   final _searchController = TextEditingController();
-  var _customFooter = true;
+  var _customFooter = false;
 
   @override
   void initState() {
@@ -172,14 +172,14 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               customTableFooter: _customFooter
                   ? (source, offset) {
-                      final maxPagesToShow = 6;
-                      final maxPagesBeforeCurrent = 3;
+                      const maxPagesToShow = 6;
+                      const maxPagesBeforeCurrent = 3;
                       final lastRequestDetails = source.lastDetails!;
                       final rowsForPager = lastRequestDetails.filteredRows ??
                           lastRequestDetails.totalRows;
                       final totalPages = rowsForPager ~/ _rowsPerPage;
                       final currentPage = (offset ~/ _rowsPerPage) + 1;
-                      List<int> pageList = [];
+                      final List<int> pageList = [];
                       if (currentPage > 1) {
                         pageList.addAll(
                           List.generate(currentPage - 1, (index) => index + 1),
