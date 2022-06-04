@@ -4,11 +4,9 @@
 
 import 'dart:math' as math;
 
+import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
-import 'advanced_datatable_source.dart';
 
 typedef GetWidgetCallBack = Widget Function();
 typedef GetFooterCallBack = Widget Function(
@@ -283,6 +281,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
   int? lastRecordsByPage;
   int? lastOrderColumn;
   bool? lastOrderDirection;
+  late final ScrollController scroller;
 
   @override
   void initState() {
@@ -297,6 +296,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
     _rowCountApproximate = widget.source.isRowCountApproximate;
     _selectedRowCount = widget.source.selectedRowCount;
     _rows.clear();
+    scroller = ScrollController();
   }
 
   @override
@@ -586,31 +586,35 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                     ),
                   ),
                 ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                dragStartBehavior: widget.dragStartBehavior,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                  child: DataTable(
-                    key: _tableKey,
-                    columns: widget.columns,
-                    sortColumnIndex: widget.sortColumnIndex,
-                    sortAscending: widget.sortAscending,
-                    onSelectAll: widget.onSelectAll,
-                    // Make sure no decoration is set on the DataTable
-                    // from the theme, as its already wrapped in a Card.
-                    decoration: const BoxDecoration(),
-                    dataRowHeight: widget.dataRowHeight,
-                    headingRowHeight: widget.headingRowHeight,
-                    horizontalMargin: widget.horizontalMargin,
-                    columnSpacing: widget.columnSpacing,
-                    showCheckboxColumn: widget.showCheckboxColumn,
-                    showBottomBorder: true,
-                    rows: loading
-                        ? loadingRows(
-                            widget.rowsPerPage,
-                          )
-                        : _getRows(_firstRowIndex, widget.rowsPerPage),
+              Scrollbar(
+                controller: scroller,
+                child: SingleChildScrollView(
+                  controller: scroller,
+                  scrollDirection: Axis.horizontal,
+                  dragStartBehavior: widget.dragStartBehavior,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: DataTable(
+                      key: _tableKey,
+                      columns: widget.columns,
+                      sortColumnIndex: widget.sortColumnIndex,
+                      sortAscending: widget.sortAscending,
+                      onSelectAll: widget.onSelectAll,
+                      // Make sure no decoration is set on the DataTable
+                      // from the theme, as its already wrapped in a Card.
+                      decoration: const BoxDecoration(),
+                      dataRowHeight: widget.dataRowHeight,
+                      headingRowHeight: widget.headingRowHeight,
+                      horizontalMargin: widget.horizontalMargin,
+                      columnSpacing: widget.columnSpacing,
+                      showCheckboxColumn: widget.showCheckboxColumn,
+                      showBottomBorder: true,
+                      rows: loading
+                          ? loadingRows(
+                              widget.rowsPerPage,
+                            )
+                          : _getRows(_firstRowIndex, widget.rowsPerPage),
+                    ),
                   ),
                 ),
               ),
