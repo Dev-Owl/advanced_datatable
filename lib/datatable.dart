@@ -98,6 +98,7 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
     this.errorWidget,
     this.getFooterRowText,
     this.customTableFooter,
+    this.defaultFootAlignment = Alignment.centerRight,
   })  : assert(actions == null || header != null),
         assert(columns.isNotEmpty),
         assert(
@@ -261,6 +262,10 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
   ///
   /// If null, the default footer will be generated.
   final GetFooterCallBack? customTableFooter;
+
+  /// The alignment for the default footer of the datatable
+  /// Default CenterRight
+  final Alignment defaultFootAlignment;
 
   @override
   PaginatedDataTableState createState() => PaginatedDataTableState();
@@ -617,7 +622,11 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                     ),
                   ),
                 ),
-                if (!loading) createTableFooter(),
+                if (!loading)
+                  Align(
+                    alignment: widget.defaultFootAlignment,
+                    child: createTableFooter(),
+                  ),
               ],
             ),
           ),
