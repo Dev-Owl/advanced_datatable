@@ -1,11 +1,11 @@
 import 'dart:convert';
+
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:advanced_datatable/datatable.dart';
+import 'package:example_adv_datatable/company_contact.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:example_adv_datatable/company_contact.dart';
 
 //TODO Support server side filter in example
 //First update server side to include a filter
@@ -117,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: _source,
+              showHorizontalScrollbarAlways: true,
               sortAscending: _sortAsc,
               sortColumnIndex: _sortIndex,
               showFirstLastButtons: true,

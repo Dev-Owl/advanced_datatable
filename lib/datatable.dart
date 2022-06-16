@@ -99,6 +99,7 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
     this.getFooterRowText,
     this.customTableFooter,
     this.defaultFootAlignment = Alignment.centerRight,
+    this.showHorizontalScrollbarAlways,
   })  : assert(actions == null || header != null),
         assert(columns.isNotEmpty),
         assert(
@@ -266,6 +267,8 @@ class AdvancedPaginatedDataTable extends StatefulWidget {
   /// The alignment for the default footer of the datatable
   /// Default CenterRight
   final Alignment defaultFootAlignment;
+
+  final bool? showHorizontalScrollbarAlways;
 
   @override
   PaginatedDataTableState createState() => PaginatedDataTableState();
@@ -553,6 +556,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       children: [
         Scrollbar(
           controller: scroller,
+          thumbVisibility: widget.showHorizontalScrollbarAlways,
           child: Card(
             semanticContainer: false,
             child: Column(
