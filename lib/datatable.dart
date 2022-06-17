@@ -620,7 +620,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                       showBottomBorder: true,
                       rows: loading
                           ? loadingRows(
-                              widget.rowsPerPage,
+                              widget.source.lastDetails?.rows.length ?? widget.rowsPerPage,
                             )
                           : _getRows(_firstRowIndex, widget.rowsPerPage),
                     ),
