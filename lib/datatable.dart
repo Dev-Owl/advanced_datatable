@@ -294,7 +294,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
   @override
   void initState() {
     super.initState();
-    _firstRowIndex = PageStorage.of(context)?.readState(context) as int? ??
+    _firstRowIndex = PageStorage.of(context).readState(context) as int? ??
         widget.initialFirstRowIndex ??
         0;
     widget.source.addListener(_handleDataSourceChanged);
@@ -620,7 +620,7 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                       showBottomBorder: true,
                       rows: loading
                           ? loadingRows(
-                              widget.source.lastDetails?.rows.length ?? widget.rowsPerPage,
+                              widget.rowsPerPage,
                             )
                           : _getRows(_firstRowIndex, widget.rowsPerPage),
                     ),
@@ -664,7 +664,8 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
       //No footer present render the default one
       final themeData = Theme.of(context);
       final localizations = MaterialLocalizations.of(context);
-      final footerTextStyle = themeData.textTheme.caption;
+      final currentLocale = Directionality.of(context);
+      final footerTextStyle = themeData.textTheme.bodySmall;
       final footerWidgets = <Widget>[];
       if (widget.onRowsPerPageChanged != null) {
         final List<Widget> availableRowsPerPage =
@@ -717,9 +718,16 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
           buildDataAmountText(),
         ),
         Container(width: 32.0),
-        if (widget.showFirstLastButtons)
+        if (widget.showFirstLastButtons && currentLocale == TextDirection.ltr)
           IconButton(
             icon: const Icon(Icons.skip_previous),
+            padding: EdgeInsets.zero,
+            onPressed: _firstRowIndex <= 0 ? null : _handleFirst,
+          )
+        else if (widget.showFirstLastButtons &&
+            currentLocale == TextDirection.rtl)
+          IconButton(
+            icon: const Icon(Icons.skip_next),
             padding: EdgeInsets.zero,
             onPressed: _firstRowIndex <= 0 ? null : _handleFirst,
           ),
@@ -736,11 +744,18 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
           tooltip: localizations.nextPageTooltip,
           onPressed: _isNextPageUnavailable() ? null : _handleNext,
         ),
-        if (widget.showFirstLastButtons)
+        if (widget.showFirstLastButtons && currentLocale == TextDirection.ltr)
           IconButton(
             icon: const Icon(Icons.skip_next),
             padding: EdgeInsets.zero,
             onPressed: _isNextPageUnavailable() ? null : _handleLast,
+          )
+        else if (widget.showFirstLastButtons &&
+            currentLocale == TextDirection.rtl)
+          IconButton(
+            icon: const Icon(Icons.skip_previous),
+            padding: EdgeInsets.zero,
+            onPressed: _firstRowIndex <= 0 ? null : _handleFirst,
           ),
         Container(width: 14.0),
       ]);
