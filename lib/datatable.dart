@@ -559,51 +559,54 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
             child: Center(child: CircularProgressIndicator()),
           )
         else
-          Scrollbar(
-            controller: scroller,
-            thumbVisibility: widget.showHorizontalScrollbarAlways,
-            child: Card(
-              semanticContainer: false,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  if (headerWidgets.isNotEmpty)
-                    Semantics(
-                      container: true,
-                      child: DefaultTextStyle(
-                        // These typographic styles aren't quite the regular ones. We pick the closest ones from the regular
-                        // list and then tweak them appropriately.
-                        // See https://material.io/design/components/data-tables.html#tables-within-cards
-                        style: _selectedRowCount > 0
-                            ? themeData.textTheme.titleMedium!.copyWith(
-                                color: themeData.colorScheme.secondary,
-                              )
-                            : themeData.textTheme.titleLarge!
-                                .copyWith(fontWeight: FontWeight.w400),
-                        child: IconTheme.merge(
-                          data: const IconThemeData(
-                            opacity: 0.54,
-                          ),
-                          child: Ink(
-                            height: 64.0,
-                            color: _selectedRowCount > 0
-                                ? themeData.secondaryHeaderColor
-                                : null,
-                            child: Padding(
-                              padding: EdgeInsetsDirectional.only(
-                                start: startPadding,
-                                end: 14.0,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: headerWidgets,
-                              ),
+          Card(
+            semanticContainer: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                if (headerWidgets.isNotEmpty)
+                  Semantics(
+                    container: true,
+                    child: DefaultTextStyle(
+                      // These typographic styles aren't quite the regular ones. We pick the closest ones from the regular
+                      // list and then tweak them appropriately.
+                      // See https://material.io/design/components/data-tables.html#tables-within-cards
+                      style: _selectedRowCount > 0
+                          ? themeData.textTheme.titleMedium!.copyWith(
+                              color: themeData.colorScheme.secondary,
+                            )
+                          : themeData.textTheme.titleLarge!
+                              .copyWith(fontWeight: FontWeight.w400),
+                      child: IconTheme.merge(
+                        data: const IconThemeData(
+                          opacity: 0.54,
+                        ),
+                        child: Ink(
+                          height: 64.0,
+                          color: _selectedRowCount > 0
+                              ? themeData.secondaryHeaderColor
+                              : null,
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.only(
+                              start: startPadding,
+                              end: 14.0,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: headerWidgets,
                             ),
                           ),
                         ),
                       ),
                     ),
-                  SingleChildScrollView(
+                  ),
+                Scrollbar(
+                  controller: scroller,
+                  thumbVisibility: widget.showHorizontalScrollbarAlways,
+                  trackVisibility: widget.showHorizontalScrollbarAlways,
+                  notificationPredicate: (notification) =>
+                      notification.depth == 0,
+                  child: SingleChildScrollView(
                     controller: scroller,
                     scrollDirection: Axis.horizontal,
                     dragStartBehavior: widget.dragStartBehavior,
@@ -630,13 +633,13 @@ class PaginatedDataTableState extends State<AdvancedPaginatedDataTable> {
                       ),
                     ),
                   ),
-                  if (!loading)
-                    Align(
-                      alignment: widget.defaultFootAlignment,
-                      child: createTableFooter(),
-                    ),
-                ],
-              ),
+                ),
+                if (!loading)
+                  Align(
+                    alignment: widget.defaultFootAlignment,
+                    child: createTableFooter(),
+                  ),
+              ],
             ),
           ),
       ],
